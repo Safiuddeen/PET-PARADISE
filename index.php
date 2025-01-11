@@ -11,14 +11,27 @@
 </head>
 <body class="bg-indigo-200 ">
 
-<!-- navbar -->
+<!-- Navbar -->
 <nav class="flex items-center justify-between w-full p-4 bg-white">
     <ul class="flex items-center w-full">
         <!-- Logo -->
-        <li class="mr-4"><img src="image/PARADISE2.png" alt="logo" class="h-20 w-36"></li>
+        <li class="mr-4">
+            <a href="index.php">
+                <img src="image/PARADISE2.png" alt="logo" class="h-20 w-36">
+            </a>
+        </li>
 
         <!-- Search Bar -->
-        <li class="flex-grow pl-6"><input type="text" placeholder="Search..." class="w-2/4 px-4 py-2 border-2 border-black rounded-lg focus:outline-none focus:border-blue-500"></li>
+        <li class="flex-grow pl-6">
+            <input type="text" placeholder="Search..." class="w-2/4 px-4 py-2 border-2 border-black rounded-lg focus:outline-none focus:border-blue-500">
+        </li>
+
+        <!-- Message Icon -->
+        <li class="relative mr-4">
+            <button onclick="window.location.href='help.php'">
+                <img src="image/massege.png" alt="Message" class="w-12 h-12">
+            </button>
+        </li>
 
         <!-- Login Icon -->
         <li class="relative ml-4">
@@ -27,24 +40,26 @@
             </button>
             <div id="loginDropdown" class="absolute right-0 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
                 <ul class="p-4 space-y-2">
-                    <li><button onclick="window.location.href='login_Details.php?form=login'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+                    <li>
+                        <button onclick="window.location.href='login_Details.php?form=login'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-700">
                             Sign in
-                        </button>                           
+                        </button>
                     </li>
-                    
-                    <li><button onclick="window.location.href='login_Details.php?form=create'" class="w-full py-2 mt-2 text-sm font-semibold text-white rounded-lg bg-slate-400 hover:bg-slate-200">
+                    <li>
+                        <button onclick="window.location.href='login_Details.php?form=create'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-700">
                             Create an Account
                         </button>
                     </li>
                 </ul>
             </div>
-        </li> 
+        </li>
+
         
-        
+
         <!-- Cart Icon with Dropdown -->
         <li class="relative ml-8">
             <button id="cartButton">
-                <img src="image/grocery-store.png" alt="Cart" class="w-12 h-12 ">
+                <img src="image/grocery-store.png" alt="Cart" class="w-12 h-12">
             </button>
             <!-- Dropdown Menu -->
             <div id="cartDropdown" class="absolute right-0 hidden bg-white border border-gray-300 rounded-lg shadow-lg w-80">
@@ -60,6 +75,7 @@
         </li>
     </ul>
 </nav>
+
 
 <!-- Categories Inline -->
     <div class="p-4 bg-gray-200">
@@ -90,13 +106,7 @@
 <div class="w-full h-3 bg-gray-100 "></div>
 
 <div class="relative">
-    <img class="object-cover w-full h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[46vh]" src="image/animal-front.jpg" alt="Welcome Banner">
-    <div class="absolute top-0 left-0 flex items-center justify-center w-full h-full">
-        <div class="text-center text-black">
-            <!-- <h1 class="px-5 text-lg font-bold sm:text-xl md:text-2xl lg:text-4xl">Welcome to PET-PARADISE.</h1>
-            <h5 class="mt-2 text-sm sm:text-base md:text-lg lg:text-xl">Everything they need, all in one happy place.</h5> -->
-        </div>
-    </div>
+    <img class="object-cover w-full h-auto max-h-[55vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] min-h-[140px]" src="image/banner1.png" alt="Welcome Banner">
 </div>
 
 

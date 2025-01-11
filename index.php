@@ -74,19 +74,20 @@
             </a>
             <a href="#" class="flex flex-col items-center font-bold text-black hover:underline">
                 <img src="image/icons/Health.png" alt="Food Icon" class="w-12 h-12">
-                <span class="mt-2 text-lg font-bold">Health & Wellness</span>
+                <span class="mt-2 text-lg font-bold">Health</span>
             </a>
             <a href="#" class="flex flex-col items-center font-bold text-black hover:underline">
                 <img src="image/icons/Housing.png" alt="Food Icon" class="w-12 h-12">
                 <span class="mt-2 text-lg font-bold">Housing</span>
             </a>
-            
-            <a href="#" class="font-bold text-black hover:underline">Housing</a>
-            <a href="#" class="font-bold text-black hover:underline">Specialty Items</a>
+            <a href="#" class="flex flex-col items-center font-bold text-black hover:underline">
+                <img src="image/icons/Specialty.png" alt="Food Icon" class="w-12 h-12">
+                <span class="mt-2 text-lg font-bold">Specialty</span>
+            </a>
         </div>
     </div>  
 
-<div class="w-full h-5 bg-gray-100 border-t-4"></div>
+<div class="w-full h-3 bg-gray-100 "></div>
 
 <div class="relative">
     <img class="object-cover w-full h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[46vh]" src="image/animal-front.jpg" alt="Welcome Banner">
@@ -161,20 +162,44 @@
     </table>
 </div>
 
+<div class="relative">
+    <img class="object-cover w-full h-[30vh] sm:h-[35vh] md:h-[40vh] lg:h-[46vh]" src="image/animal-front.jpg" alt="Welcome Banner">
+    <div class="absolute top-0 left-0 flex items-center justify-center w-full h-full">
+        <div class="text-center text-black">
+            <!-- <h1 class="px-5 text-lg font-bold sm:text-xl md:text-2xl lg:text-4xl">Welcome to PET-PARADISE.</h1>
+            <h5 class="mt-2 text-sm sm:text-base md:text-lg lg:text-xl">Everything they need, all in one happy place.</h5> -->
+        </div>
+    </div>
+</div>
 
-
+<div class="w-full h-5 bg-gray-100 border-t-4"></div>
 
 <!-- item cards -->
 <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-6">
-    <!-- card 1 -->
-    <div class="p-4 bg-white rounded-lg shadow-lg">
-        <h3 class="mb-2 text-lg font-bold">Card 01</h3>
-        <p class="text-gray-600">This is a description for card 01.</p>
-        <div class="flex items-center mt-4">
-            <button class="px-4 py-1 text-white bg-blue-500 rounded-lg hover:bg-blue-600">View</button>
-            <img src="image/grocery-store.png" alt="Cart Icon" class="w-6 h-6 ml-4">
+    <!-- Card 1 -->
+        <div class="p-4 bg-white rounded-lg shadow-lg">
+            <!-- Image Section -->
+            <img src="https://www.bizadmark.com/wp-content/uploads/2021/08/pet-produtcs.jpg" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+            
+            <!-- Title -->
+            <h3 class="mb-2 text-lg font-bold">Card 01 Item name</h3>
+            
+            <!-- Description -->
+            <p class="text-gray-600">This is a description for card 01.</p>
+            
+            <!-- Additional Fields -->
+            <div class="mt-4">
+                <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                <p class="text-sm font-semibold text-gray-700">Quantity: <span class="text-gray-600">10</span></p>
+                <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+            </div>
+
+            <!-- Button and Icon -->
+            <div class="flex items-center mt-4">
+                <button class="px-4 py-1 text-white bg-blue-500 rounded-lg hover:bg-blue-600">View</button>
+                <img src="image/grocery-store.png" alt="Cart Icon" class="w-6 h-6 ml-4">
+            </div>
         </div>
-    </div>
 
 
   <!-- Card 2 -->

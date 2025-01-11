@@ -27,8 +27,9 @@
 
             <button type="submit" class="px-6 py-2 text-white transition duration-200 bg-blue-500 rounded-2xl hover:bg-blue-600">
                 Log in
-            </button>
-            <a href="create_login.php" class="self-center text-blue-950 hover:underline">Create New Account</a>
+            </button><br>
+            <a href="admin2.php" class="self-center text-blue-950 hover:underline">temporary wat to view addmindash board</a><br>
+            <a href="?form=create" class="self-center text-blue-950 hover:underline">Create New Account</a>
 
             <footer class="mt-6 text-sm text-center text-white">
                 <p>© 2024 Paradise Inc. All rights reserved.</p>
@@ -110,6 +111,11 @@
         }
 
         window.onload = showForm;
+
+        // Add a click event listener to navigate to admin2.php
+        document.getElementById('adminButton').addEventListener('click', function () {
+            window.location.href = 'admin2.php';
+        });
     </script>
     
     

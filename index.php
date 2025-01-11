@@ -80,7 +80,7 @@
 <!-- Categories Inline -->
     <div class="p-4 bg-gray-200">
         <div class="container flex justify-center mx-auto space-x-6">
-            <a href="#" class="flex flex-col items-center font-bold text-black hover:underline">
+            <a href="#" class="flex flex-col items-center font-bold text-black hover:underline ">
                 <img src="image/icons/food.png" alt="Food Icon" class="w-12 h-12">
                 <span class="mt-2 text-lg font-bold">Food</span>
             </a>

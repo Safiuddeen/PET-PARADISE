@@ -14,11 +14,11 @@
 
 <div class="flex ">
     <!-- Sidebar -->
-    <div id="sidebar" class="flex-col items-center hidden w-1/5 min-h-full p-4 space-y-6 text-white transition-all duration-300 ease-in-out bg-blue-500 lg:flex">
+    <div id="sidebar" class="flex-col items-center hidden w-1/5 min-h-full p-4 space-y-6 text-black transition-all duration-300 ease-in-out bg-white lg:flex">
         <!-- User Info -->
         <div class="flex flex-col items-center mt-6 space-y-4">
             <img src="https://via.placeholder.com/80" alt="User" class="w-20 h-20 border-4 border-white rounded-full">
-            <p class="text-lg font-semibold">John Doe</p>
+            <p class="text-lg font-semibold">---------</p>
         </div>
         <div class="w-full h-1 border-t-4 border-black"></div>
         <!-- Notification and Icons -->
@@ -55,7 +55,7 @@
             </ul>
         </div>
         <div id="backButton" class="hidden mt-4">
-            <button onclick="showWelcome()" class="flex items-center px-4 py-2 text-sm font-bold text-blue-500 bg-white rounded">
+            <button onclick="showWelcome()" class="flex items-center px-4 py-2 text-sm font-bold text-white bg-blue-500 rounded">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -94,14 +94,118 @@
             </p>
         </div>
 
+        <!-- Pre-Orders Table -->
+    <div class="mt-8">
+        <h3 class="text-xl font-semibold text-center">Pre-Orders</h3>
+        <table class="w-full mt-4 border border-collapse border-gray-300 table-auto">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="px-4 py-2 border border-gray-300">Order ID</th>
+                    <th class="px-4 py-2 border border-gray-300">Order Image</th>
+                    <th class="px-4 py-2 border border-gray-300">Order Item</th>
+                    <th class="px-4 py-2 border border-gray-300">Required Quantity</th>
+                    <th class="px-4 py-2 border border-gray-300">Available Quantity</th>
+                    <th class="px-4 py-2 border border-gray-300">Customer Address</th>
+                    <th class="px-4 py-2 border border-gray-300">Price</th>
+                    <th class="px-4 py-2 border border-gray-300">Payment Status</th>
+                    <th class="px-4 py-2 border border-gray-300">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="text-center">
+                    <td class="px-4 py-2 border border-gray-300">
+                        <img src="https://via.placeholder.com/50" alt="Order Image" class="w-12 h-12 mx-auto">
+                    </td>
+                    <td class="px-4 py-2 border border-gray-300">Dog Food</td>
+                    <td class="px-4 py-2 border border-gray-300">10</td>
+                    <td class="px-4 py-2 border border-gray-300">8</td>
+                    <td class="px-4 py-2 border border-gray-300">123 Pet Street, Colombo</td>
+                    <td class="px-4 py-2 border border-gray-300">Rs. 4500</td>
+                    <td class="px-4 py-2 border border-gray-300">Paid</td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <button class="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">Deliver</button>
+                        <button class="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">Cancel</button>
+                    </td>
+                </tr>
+                <tr class="text-center">
+                    <td class="px-4 py-2 border border-gray-300">
+                        <img src="https://via.placeholder.com/50" alt="Order Image" class="w-12 h-12 mx-auto">
+                    </td>
+                    <td class="px-4 py-2 border border-gray-300">Cat Toy</td>
+                    <td class="px-4 py-2 border border-gray-300">5</td>
+                    <td class="px-4 py-2 border border-gray-300">5</td>
+                    <td class="px-4 py-2 border border-gray-300">456 Kitty Lane, Kandy</td>
+                    <td class="px-4 py-2 border border-gray-300">Rs. 1500</td>
+                    <td class="px-4 py-2 border border-gray-300">Pending</td>
+                    <td class="px-4 py-2 border border-gray-300">
+                        <button class="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">Deliver</button>
+                        <button class="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">Cancel</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Order History Table -->
+    <div class="mt-8">
+        <h3 class="text-xl font-semibold text-center">Order History</h3>
+        <table class="w-full mt-4 border border-collapse border-gray-300 table-auto">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="px-4 py-2 border border-gray-300">Order ID</th>
+                    <th class="px-4 py-2 border border-gray-300">Order Item</th>
+                    <th class="px-4 py-2 border border-gray-300">Quantity</th>
+                    <th class="px-4 py-2 border border-gray-300">Price</th>
+                    <th class="px-4 py-2 border border-gray-300">Order Date</th>
+                    <th class="px-4 py-2 border border-gray-300">Delivery Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="text-center">
+                    <td class="px-4 py-2 border border-gray-300">#1001</td>
+                    <td class="px-4 py-2 border border-gray-300">Dog Leash</td>
+                    <td class="px-4 py-2 border border-gray-300">1</td>
+                    <td class="px-4 py-2 border border-gray-300">Rs. 1000</td>
+                    <td class="px-4 py-2 border border-gray-300">2025-01-01</td>
+                    <td class="px-4 py-2 border border-gray-300">Delivered</td>
+                </tr>
+                <tr class="text-center">
+                    <td class="px-4 py-2 border border-gray-300">#1002</td>
+                    <td class="px-4 py-2 border border-gray-300">Bird Cage</td>
+                    <td class="px-4 py-2 border border-gray-300">2</td>
+                    <td class="px-4 py-2 border border-gray-300">Rs. 4500</td>
+                    <td class="px-4 py-2 border border-gray-300">2025-01-05</td>
+                    <td class="px-4 py-2 border border-gray-300">Cancelled</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
         <!-- Category-Specific Content -->
+        <!-- DOG -->
         <div id="dog" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Dog Items</h1>
             <p class="mb-6 text-center">Details about dogs and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md " action="" method="post" enctype="multipart/form-data">
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+                <!-- Search Bar -->
+                <div class="flex items-center justify-between mb-6">
+                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
+                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
+                        Search
+                    </button>
+                </div>
+
                 <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
-                
+
+                <!-- Item ID Field -->
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
+                </div>
+
+                <!-- Item Name Field -->
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
@@ -114,10 +218,11 @@
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="discount" placeholder="00000.00/="/>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
                 </div>
 
-                <div class="mb-4"><label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
                 </div>
 
@@ -142,20 +247,44 @@
                     <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
                 </div>
 
-                <div class="flex items-center justify-center">
-                    <button class="px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
+                <!-- Buttons -->
+                <div class="flex items-center justify-between">
+                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
                         Add Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
+                        Update Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
+                        Delete Item
                     </button>
                 </div>
             </form>
         </div>
+
+        <!-- CAT -->
         <div id="cat" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Cat Items</h1>
             <p class="mb-6 text-center">Details about cat and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md " action="" method="post" enctype="multipart/form-data">
-                <p class="mb-4 text-lg font-bold text-center">Add Cat Items</p>
-                
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+                <!-- Search Bar -->
+                <div class="flex items-center justify-between mb-6">
+                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
+                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
+                        Search
+                    </button>
+                </div>
+
+                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+
+                <!-- Item ID Field -->
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
+                </div>
+
+                <!-- Item Name Field -->
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
@@ -168,10 +297,11 @@
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="discount" placeholder="00000.00/="/>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
                 </div>
 
-                <div class="mb-4"><label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
                 </div>
 
@@ -196,20 +326,44 @@
                     <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
                 </div>
 
-                <div class="flex items-center justify-center">
-                    <button class="px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
+                <!-- Buttons -->
+                <div class="flex items-center justify-between">
+                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
                         Add Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
+                        Update Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
+                        Delete Item
                     </button>
                 </div>
             </form>
         </div>
 
+        <!-- BIRD -->
         <div id="bird" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Bird Items</h1>
             <p class="mb-6 text-center">Details about bird and related items go here.</p>
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md " action="" method="post" enctype="multipart/form-data">
-                <p class="mb-4 text-lg font-bold text-center">Add Bird Items</p>
-                
+
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+                <!-- Search Bar -->
+                <div class="flex items-center justify-between mb-6">
+                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
+                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
+                        Search
+                    </button>
+                </div>
+
+                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+
+                <!-- Item ID Field -->
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
+                </div>
+
+                <!-- Item Name Field -->
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
@@ -222,10 +376,11 @@
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="discount" placeholder="00000.00/="/>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
                 </div>
 
-                <div class="mb-4"><label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
                 </div>
 
@@ -250,21 +405,44 @@
                     <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
                 </div>
 
-                <div class="flex items-center justify-center">
-                    <button class="px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
+                <!-- Buttons -->
+                <div class="flex items-center justify-between">
+                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
                         Add Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
+                        Update Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
+                        Delete Item
                     </button>
                 </div>
             </form>
         </div>
 
+        <!-- RABBIT -->
         <div id="rabbit" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Rabbit Items</h1>
             <p class="mb-6 text-center">Details about rabbit and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md " action="" method="post" enctype="multipart/form-data">
-                <p class="mb-4 text-lg font-bold text-center">Add Rabbit Items</p>
-                
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+                <!-- Search Bar -->
+                <div class="flex items-center justify-between mb-6">
+                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
+                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
+                        Search
+                    </button>
+                </div>
+
+                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+
+                <!-- Item ID Field -->
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
+                </div>
+
+                <!-- Item Name Field -->
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
@@ -277,10 +455,11 @@
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="discount" placeholder="00000.00/="/>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
                 </div>
 
-                <div class="mb-4"><label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
                 </div>
 
@@ -305,22 +484,44 @@
                     <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
                 </div>
 
-                <div class="flex items-center justify-center">
-                    <button class="px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
+                <!-- Buttons -->
+                <div class="flex items-center justify-between">
+                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
                         Add Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
+                        Update Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
+                        Delete Item
                     </button>
                 </div>
             </form>
         </div>
 
-
+        <!-- FISH -->
         <div id="fish" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Fish Items</h1>
             <p class="mb-6 text-center">Details about fish and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md " action="" method="post" enctype="multipart/form-data">
-                <p class="mb-4 text-lg font-bold text-center">Add Fish Items</p>
-                
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+                <!-- Search Bar -->
+                <div class="flex items-center justify-between mb-6">
+                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
+                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
+                        Search
+                    </button>
+                </div>
+
+                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+
+                <!-- Item ID Field -->
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
+                </div>
+
+                <!-- Item Name Field -->
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
@@ -333,10 +534,11 @@
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="discount" placeholder="00000.00/="/>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
                 </div>
 
-                <div class="mb-4"><label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
                 </div>
 
@@ -361,21 +563,44 @@
                     <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
                 </div>
 
-                <div class="flex items-center justify-center">
-                    <button class="px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
+                <!-- Buttons -->
+                <div class="flex items-center justify-between">
+                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
                         Add Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
+                        Update Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
+                        Delete Item
                     </button>
                 </div>
             </form>
         </div>
 
+        <!-- FARM-ANIMAL -->
         <div id="farm" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Farm Animal Items</h1>
             <p class="mb-6 text-center">Details about farm animal and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md " action="" method="post" enctype="multipart/form-data">
-                <p class="mb-4 text-lg font-bold text-center">Add Farm Animal Items</p>
-                
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+                <!-- Search Bar -->
+                <div class="flex items-center justify-between mb-6">
+                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
+                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
+                        Search
+                    </button>
+                </div>
+
+                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+
+                <!-- Item ID Field -->
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
+                </div>
+
+                <!-- Item Name Field -->
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
@@ -388,10 +613,11 @@
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="discount" placeholder="00000.00/="/>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
                 </div>
 
-                <div class="mb-4"><label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
                 </div>
 
@@ -416,21 +642,44 @@
                     <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
                 </div>
 
-                <div class="flex items-center justify-center">
-                    <button class="px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
+                <!-- Buttons -->
+                <div class="flex items-center justify-between">
+                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
                         Add Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
+                        Update Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
+                        Delete Item
                     </button>
                 </div>
             </form>
         </div>
 
+        <!-- HORSE -->
         <div id="horse" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Horse Items</h1>
             <p class="mb-6 text-center">Details about horse and related items go here.</p>
             
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md " action="" method="post" enctype="multipart/form-data">
-                <p class="mb-4 text-lg font-bold text-center">Add Horse Items</p>
-                
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+                <!-- Search Bar -->
+                <div class="flex items-center justify-between mb-6">
+                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
+                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
+                        Search
+                    </button>
+                </div>
+
+                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+
+                <!-- Item ID Field -->
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
+                </div>
+
+                <!-- Item Name Field -->
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
@@ -443,10 +692,11 @@
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="discount" placeholder="00000.00/="/>
+                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
                 </div>
 
-                <div class="mb-4"><label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
+                <div class="mb-4">
+                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
                 </div>
 
@@ -471,9 +721,16 @@
                     <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
                 </div>
 
-                <div class="flex items-center justify-center">
-                    <button class="px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
+                <!-- Buttons -->
+                <div class="flex items-center justify-between">
+                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
                         Add Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
+                        Update Item
+                    </button>
+                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
+                        Delete Item
                     </button>
                 </div>
             </form>

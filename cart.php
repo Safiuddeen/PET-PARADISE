@@ -6,7 +6,7 @@
     <title>Shopping Cart</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
+<body>
     <div class="max-w-5xl mx-auto mt-10">
         <div class="flex flex-col my-10 shadow-md md:flex-row">
             <!-- Left Section (Shopping Cart Items) -->

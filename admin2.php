@@ -65,6 +65,22 @@
 
         <div class="w-full h-1 border-t-4 border-black"></div>
 
+        <!-- Item managment -->
+        <div class="flex flex-col items-center w-full">
+        <h3 class="mb-4 text-lg font-bold">Inventory</h3>
+        <ul class="space-y-2 text-center">
+            <li>
+                <a onclick="window.location.href='login_Details.php?form=login'" class="cursor-pointer ">
+                <img src="image/inventory.png" alt="Inventory" class="w-16 h-16 mx-auto">
+                Inventory
+                </a>
+            </li>
+        </ul>
+    </div>
+
+
+        <div class="w-full h-1 border-t-4 border-black"></div>
+
         <!-- Logout Button -->
         <div class="mt-auto">
             <button class="flex items-center mb-auto space-x-1 hover:text-gray-200">
@@ -84,103 +100,104 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 p-4 bg-indigo-200">
-        <!-- Default Welcome Content -->
-        <div id="welcome" class="content-section">
-            <h1 class="text-3xl font-bold text-center">Welcome to Admin Dashboard</h1>
-            <h2 class="mt-4 text-2xl text-center">PetParadise</h2>
-            <p class="mt-6 text-lg text-center">
-                Manage your categories and items seamlessly using the sidebar.
-            </p>
-        </div>
+        <div class="flex-1 p-4 bg-indigo-200">
+            <!-- Default Welcome Content -->
+            <div id="welcome" class="content-section">
+                <h1 class="text-3xl font-bold text-center">Welcome to Admin Dashboard</h1>
+                <h2 class="mt-4 text-2xl text-center">PetParadise</h2>
+                <p class="mt-6 text-lg text-center">
+                    
+                </p>
+                <!-- Pre-Orders Table -->
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold text-center">Pre-Orders</h3>
+                    <table class="w-full mt-4 border border-collapse border-gray-300 table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="px-4 py-2 border border-gray-300">Order ID</th>
+                                <th class="px-4 py-2 border border-gray-300">Order Image</th>
+                                <th class="px-4 py-2 border border-gray-300">Order Item</th>
+                                <th class="px-4 py-2 border border-gray-300">Required Quantity</th>
+                                <th class="px-4 py-2 border border-gray-300">Available Quantity</th>
+                                <th class="px-4 py-2 border border-gray-300">Customer Address</th>
+                                <th class="px-4 py-2 border border-gray-300">Price</th>
+                                <th class="px-4 py-2 border border-gray-300">Payment Status</th>
+                                <th class="px-4 py-2 border border-gray-300">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-center">
+                                <td class="px-4 py-2 border border-gray-300">#1001</td>
+                                <td class="px-4 py-2 border border-gray-300">
+                                    <img src="https://via.placeholder.com/50" alt="Order Image" class="w-12 h-12 mx-auto">
+                                </td>
+                                <td class="px-4 py-2 border border-gray-300">Dog Food</td>
+                                <td class="px-4 py-2 border border-gray-300">10</td>
+                                <td class="px-4 py-2 border border-gray-300">8</td>
+                                <td class="px-4 py-2 border border-gray-300">123 Pet Street, Colombo</td>
+                                <td class="px-4 py-2 border border-gray-300">Rs. 4500</td>
+                                <td class="px-4 py-2 border border-gray-300">Paid</td>
+                                <td class="px-4 py-2 border border-gray-300">
+                                    <button class="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">Deliver</button>
+                                    <button class="px-3 py-1 mt-2 text-white bg-red-500 rounded hover:bg-red-600">Cancel</button>
+                                </td>
+                            </tr>
+                            <tr class="text-center">
+                                <td class="px-4 py-2 border border-gray-300">#1001</td>
+                                <td class="px-4 py-2 border border-gray-300">
+                                    <img src="https://via.placeholder.com/50" alt="Order Image" class="w-12 h-12 mx-auto">
+                                </td>
+                                <td class="px-4 py-2 border border-gray-300">Cat Toy</td>
+                                <td class="px-4 py-2 border border-gray-300">5</td>
+                                <td class="px-4 py-2 border border-gray-300">5</td>
+                                <td class="px-4 py-2 border border-gray-300">456 Kitty Lane, Kandy</td>
+                                <td class="px-4 py-2 border border-gray-300">Rs. 1500</td>
+                                <td class="px-4 py-2 border border-gray-300">Pending</td>
+                                <td class="px-4 py-2 border border-gray-300">
+                                    <button class="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">Deliver</button>
+                                    <button class="px-3 py-1 mt-2 text-white bg-red-500 rounded hover:bg-red-600">Cancel</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <!-- Pre-Orders Table -->
-    <div class="mt-8">
-        <h3 class="text-xl font-semibold text-center">Pre-Orders</h3>
-        <table class="w-full mt-4 border border-collapse border-gray-300 table-auto">
-            <thead class="bg-gray-200">
-                <tr>
-                    <th class="px-4 py-2 border border-gray-300">Order ID</th>
-                    <th class="px-4 py-2 border border-gray-300">Order Image</th>
-                    <th class="px-4 py-2 border border-gray-300">Order Item</th>
-                    <th class="px-4 py-2 border border-gray-300">Required Quantity</th>
-                    <th class="px-4 py-2 border border-gray-300">Available Quantity</th>
-                    <th class="px-4 py-2 border border-gray-300">Customer Address</th>
-                    <th class="px-4 py-2 border border-gray-300">Price</th>
-                    <th class="px-4 py-2 border border-gray-300">Payment Status</th>
-                    <th class="px-4 py-2 border border-gray-300">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="text-center">
-                    <td class="px-4 py-2 border border-gray-300">
-                        <img src="https://via.placeholder.com/50" alt="Order Image" class="w-12 h-12 mx-auto">
-                    </td>
-                    <td class="px-4 py-2 border border-gray-300">Dog Food</td>
-                    <td class="px-4 py-2 border border-gray-300">10</td>
-                    <td class="px-4 py-2 border border-gray-300">8</td>
-                    <td class="px-4 py-2 border border-gray-300">123 Pet Street, Colombo</td>
-                    <td class="px-4 py-2 border border-gray-300">Rs. 4500</td>
-                    <td class="px-4 py-2 border border-gray-300">Paid</td>
-                    <td class="px-4 py-2 border border-gray-300">
-                        <button class="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">Deliver</button>
-                        <button class="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">Cancel</button>
-                    </td>
-                </tr>
-                <tr class="text-center">
-                    <td class="px-4 py-2 border border-gray-300">
-                        <img src="https://via.placeholder.com/50" alt="Order Image" class="w-12 h-12 mx-auto">
-                    </td>
-                    <td class="px-4 py-2 border border-gray-300">Cat Toy</td>
-                    <td class="px-4 py-2 border border-gray-300">5</td>
-                    <td class="px-4 py-2 border border-gray-300">5</td>
-                    <td class="px-4 py-2 border border-gray-300">456 Kitty Lane, Kandy</td>
-                    <td class="px-4 py-2 border border-gray-300">Rs. 1500</td>
-                    <td class="px-4 py-2 border border-gray-300">Pending</td>
-                    <td class="px-4 py-2 border border-gray-300">
-                        <button class="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">Deliver</button>
-                        <button class="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600">Cancel</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Order History Table -->
-    <div class="mt-8">
-        <h3 class="text-xl font-semibold text-center">Order History</h3>
-        <table class="w-full mt-4 border border-collapse border-gray-300 table-auto">
-            <thead class="bg-gray-200">
-                <tr>
-                    <th class="px-4 py-2 border border-gray-300">Order ID</th>
-                    <th class="px-4 py-2 border border-gray-300">Order Item</th>
-                    <th class="px-4 py-2 border border-gray-300">Quantity</th>
-                    <th class="px-4 py-2 border border-gray-300">Price</th>
-                    <th class="px-4 py-2 border border-gray-300">Order Date</th>
-                    <th class="px-4 py-2 border border-gray-300">Delivery Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="text-center">
-                    <td class="px-4 py-2 border border-gray-300">#1001</td>
-                    <td class="px-4 py-2 border border-gray-300">Dog Leash</td>
-                    <td class="px-4 py-2 border border-gray-300">1</td>
-                    <td class="px-4 py-2 border border-gray-300">Rs. 1000</td>
-                    <td class="px-4 py-2 border border-gray-300">2025-01-01</td>
-                    <td class="px-4 py-2 border border-gray-300">Delivered</td>
-                </tr>
-                <tr class="text-center">
-                    <td class="px-4 py-2 border border-gray-300">#1002</td>
-                    <td class="px-4 py-2 border border-gray-300">Bird Cage</td>
-                    <td class="px-4 py-2 border border-gray-300">2</td>
-                    <td class="px-4 py-2 border border-gray-300">Rs. 4500</td>
-                    <td class="px-4 py-2 border border-gray-300">2025-01-05</td>
-                    <td class="px-4 py-2 border border-gray-300">Cancelled</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+                <!-- Order History Table -->
+                <div class="mt-8">
+                    <h3 class="text-xl font-semibold text-center">Order History</h3>
+                    <table class="w-full mt-4 border border-collapse border-gray-300 table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="px-4 py-2 border border-gray-300">Order ID</th>
+                                <th class="px-4 py-2 border border-gray-300">Order Item</th>
+                                <th class="px-4 py-2 border border-gray-300">Quantity</th>
+                                <th class="px-4 py-2 border border-gray-300">Price</th>
+                                <th class="px-4 py-2 border border-gray-300">Order Date</th>
+                                <th class="px-4 py-2 border border-gray-300">Delivery Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-center">
+                                <td class="px-4 py-2 border border-gray-300">#1001</td>
+                                <td class="px-4 py-2 border border-gray-300">Dog Leash</td>
+                                <td class="px-4 py-2 border border-gray-300">1</td>
+                                <td class="px-4 py-2 border border-gray-300">Rs. 1000</td>
+                                <td class="px-4 py-2 border border-gray-300">2025-01-01</td>
+                                <td class="px-4 py-2 border border-gray-300">Delivered</td>
+                            </tr>
+                            <tr class="text-center">
+                                <td class="px-4 py-2 border border-gray-300">#1002</td>
+                                <td class="px-4 py-2 border border-gray-300">Bird Cage</td>
+                                <td class="px-4 py-2 border border-gray-300">2</td>
+                                <td class="px-4 py-2 border border-gray-300">Rs. 4500</td>
+                                <td class="px-4 py-2 border border-gray-300">2025-01-05</td>
+                                <td class="px-4 py-2 border border-gray-300">Cancelled</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>  
+        
 
         <!-- Category-Specific Content -->
         <!-- DOG -->
@@ -239,8 +256,16 @@
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="item_category">Item Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="item_category" placeholder="Item Category"/>
+                    <select class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="item_category">
+                        <option value="" disabled selected>Select Item Category</option>
+                        <option value="Food">Food</option>
+                        <option value="Accessories">Accessories</option>
+                        <option value="Health & Wellness">Health & Wellness</option>
+                        <option value="Housing">Housing</option>
+                        <option value="Specialty Items">Specialty Items</option>
+                    </select>
                 </div>
+
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="description">Description:</label>
@@ -260,6 +285,25 @@
                     </button>
                 </div>
             </form>
+            <br>
+            <br>
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>  
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>            
+            <br><br><br><br>
         </div>
 
         <!-- CAT -->
@@ -276,7 +320,7 @@
                     </button>
                 </div>
 
-                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+                <p class="mb-4 text-lg font-bold text-center">Add Cat Items</p>
 
                 <!-- Item ID Field -->
                 <div class="mb-4">
@@ -339,6 +383,25 @@
                     </button>
                 </div>
             </form>
+            <br>
+            <br>
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>            
+            <br><br><br><br>
         </div>
 
         <!-- BIRD -->
@@ -355,7 +418,7 @@
                     </button>
                 </div>
 
-                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+                <p class="mb-4 text-lg font-bold text-center">Add Bird Items</p>
 
                 <!-- Item ID Field -->
                 <div class="mb-4">
@@ -418,6 +481,25 @@
                     </button>
                 </div>
             </form>
+            <br>
+            <br>
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>            
+            <br><br><br><br>
         </div>
 
         <!-- RABBIT -->
@@ -434,7 +516,7 @@
                     </button>
                 </div>
 
-                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+                <p class="mb-4 text-lg font-bold text-center">Add Rabbit Items</p>
 
                 <!-- Item ID Field -->
                 <div class="mb-4">
@@ -497,6 +579,25 @@
                     </button>
                 </div>
             </form>
+            <br>
+            <br>
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>            
+            <br><br><br><br>
         </div>
 
         <!-- FISH -->
@@ -513,7 +614,7 @@
                     </button>
                 </div>
 
-                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+                <p class="mb-4 text-lg font-bold text-center">Add Fish Items</p>
 
                 <!-- Item ID Field -->
                 <div class="mb-4">
@@ -576,6 +677,25 @@
                     </button>
                 </div>
             </form>
+            <br>
+            <br>
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>            
+            <br><br><br><br>
         </div>
 
         <!-- FARM-ANIMAL -->
@@ -592,7 +712,7 @@
                     </button>
                 </div>
 
-                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+                <p class="mb-4 text-lg font-bold text-center">Add Farm-Animal Items</p>
 
                 <!-- Item ID Field -->
                 <div class="mb-4">
@@ -655,6 +775,25 @@
                     </button>
                 </div>
             </form>
+            <br>
+            <br>
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>            
+            <br><br><br><br>
         </div>
 
         <!-- HORSE -->
@@ -671,7 +810,7 @@
                     </button>
                 </div>
 
-                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
+                <p class="mb-4 text-lg font-bold text-center">Add Hourse Items</p>
 
                 <!-- Item ID Field -->
                 <div class="mb-4">
@@ -701,11 +840,35 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)"/>
-                    <img id="preview" src="#" alt="Image preview" class="hidden max-w-xs mx-auto mt-4"/>
-                </div>
+    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
+    <input
+        class="w-full px-3 py-2 text-gray-700"
+        type="file"
+        name="itemimage"
+        accept="image/*"
+        onchange="previewImage(event)"
+    />
+    <span id="file-label" class="text-sm text-gray-500">No file chosen</span>
+    <!-- Image preview -->
+    <img
+        id="preview"
+        src="#"
+        alt="Image preview"
+        class="hidden max-w-xs mx-auto mt-4 border border-gray-300 rounded shadow"
+    />
+    <!-- Remove Button -->
+    <button
+        id="remove-button"
+        onclick="removeImage()"
+        type="button"
+        class="hidden px-4 py-2 mt-2 text-sm text-white bg-red-500 rounded shadow hover:bg-red-600"
+    >
+        Remove Image
+    </button>
+</div>
 
+
+               
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
                     <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="pet_category" placeholder="Pet Category"/>
@@ -734,6 +897,25 @@
                     </button>
                 </div>
             </form>
+            <br>
+            <br>
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>            
+            <br><br><br><br>
         </div>
         
     </div>
@@ -770,16 +952,74 @@
     }
 
 
-    // Function to preview the selected image before uploading
-    function previewImage(event) {
+   // Function to preview the selected image
+function previewImage(event) {
+    const preview = document.getElementById('preview'); // Image preview element
+    const removeButton = document.getElementById('remove-button'); // Remove button
+    const fileLabel = document.getElementById('file-label'); // Label for the file name
+    const fileInput = event.target; // File input element
+    const file = fileInput.files[0]; // Get the selected file
+
+    if (file) {
         const reader = new FileReader();
-        reader.onload = function() {
-            const preview = document.getElementById('preview');
-            preview.src = reader.result;
-            preview.style.display = 'block'; // Show image preview
+
+        reader.onload = function (e) {
+            preview.src = e.target.result; // Display the image in the preview
+            preview.classList.remove('hidden'); // Show the preview image
+            removeButton.classList.remove('hidden'); // Show the remove button
+            fileLabel.textContent = file.name; // Display the file name
         };
-        reader.readAsDataURL(event.target.files[0]);
+
+        reader.readAsDataURL(file); // Read the file as a Data URL
     }
+}
+
+// Function to remove the image preview and reset input
+function removeImage() {
+    const preview = document.getElementById('preview'); // Image preview element
+    const fileInput = document.querySelector('input[name="itemimage"]'); // File input element
+    const removeButton = document.getElementById('remove-button'); // Remove button
+    const fileLabel = document.getElementById('file-label'); // Label for the file name
+
+    preview.src = ''; // Clear the image source
+    preview.classList.add('hidden'); // Hide the preview image
+    fileInput.value = ''; // Reset the file input field
+    removeButton.classList.add('hidden'); // Hide the remove button
+    fileLabel.textContent = 'No file chosen'; // Reset the file label
+}
+
+
+
+
+    // JavaScript function to update the date and time
+    function updateDateTime() {
+            const now = new Date();
+            const dateOptions = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            };
+            const weekdayOptions ={
+                weekday: 'long',
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+            };
+
+            const formattedDate = now.toLocaleDateString('en-US', dateOptions);
+            const formattedweekday = now.toLocaleDateString('en-US', weekdayOptions);
+            const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
+
+            document.getElementById("date").textContent = formattedDate;
+            document.getElementById("weekday").textContent = formattedweekday;
+            document.getElementById("time").textContent = formattedTime;
+        }
+
+        // Call the function every second to update the time
+        setInterval(updateDateTime, 1000);
 </script>
 
 </body>

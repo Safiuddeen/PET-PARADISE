@@ -14,8 +14,11 @@
 <nav class="flex items-center justify-between w-full p-4 bg-white">
     <ul class="flex items-center w-full">
         <!-- Logo -->
-        <li class="mr-4"><img src="image/PARADISE2.png" alt="logo" class="h-20 w-36"></li>
-
+        <li class="mr-4">
+            <a href="index.php">
+                <img src="image/PARADISE2.png" alt="logo" class="h-20 w-36">
+            </a>
+        </li>
         <!-- Search Bar -->
         <li class="flex-grow pl-6"><input type="text" placeholder="Search..." class="w-2/4 px-4 py-2 border-2 border-black rounded-lg focus:outline-none focus:border-blue-500"></li>
 

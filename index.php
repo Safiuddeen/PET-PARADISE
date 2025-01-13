@@ -57,18 +57,22 @@
         
 
         <!-- Cart Icon with Dropdown -->
-        <li class="relative ml-8">
+        <li class="relative z-50 ml-8"> 
             <button id="cartButton">
                 <img src="image/grocery-store.png" alt="Cart" class="w-12 h-12">
             </button>
             <!-- Dropdown Menu -->
-            <div id="cartDropdown" class="absolute right-0 hidden bg-white border border-gray-300 rounded-lg shadow-lg w-80">
+            <div id="cartDropdown" class="absolute right-0 z-50 hidden bg-white border border-gray-300 rounded-lg shadow-lg w-80"> <!-- Add z-50 here as well -->
                 <ul class="p-4 space-y-2">
-                    <li class="text-sm text-gray-700">Cart is empty</li>
-                    <li>
-                        <button class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                            Process Order
-                        </button>
+                    <li class="text-sm text-gray-700">
+                        <div class="px-4 text-center">
+                            <h1 class="mb-4 text-2xl font-semibold text-gray-900">Shopping cart</h1>
+                            <p class="mb-2 text-lg text-gray-700">You don't have any items in your cart.</p>
+                            <p class="text-sm text-gray-500">Have an account? | Sign in to see your items.</p>
+                            <div class="flex justify-center gap-4 mt-6">
+                                <button onclick="window.location.href='login_Details.php?form=login'" class="px-6 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700">Sign in</button>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -315,7 +319,7 @@
     
 </body>
 <script>
-    // dropdown of Cart
+    // Dropdown of Cart
     const cartButton = document.getElementById('cartButton');
     const cartDropdown = document.getElementById('cartDropdown');
 

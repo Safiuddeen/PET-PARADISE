@@ -12,68 +12,25 @@
 
 <!-- Navbar -->
 <nav class="flex items-center justify-between w-full p-4 bg-white">
-    <ul class="flex items-center w-full">
-        <!-- Logo -->
-        <li class="mr-4">
-            <a href="index.php">
-                <img src="image/PARADISE2.png" alt="logo" class="h-20 w-36">
-            </a>
-        </li>
+        <ul class="flex items-center w-full">
+            <!-- Logo -->
+            <li class="mr-4">
+                <a href="index.php">
+                    <img src="image/PARADISE2.png" alt="logo" class="h-20 w-36">
+                </a>
+            </li>
 
-        <!-- Search Bar -->
-        <li class="flex-grow pl-6">
-            <input type="text" placeholder="Search..." class="w-2/4 px-4 py-2 border-2 border-black rounded-lg focus:outline-none focus:border-blue-500">
-        </li>
+            <!-- Quote Bar -->
+            <li class="items-center flex-grow">
+                
+            </li>
 
-        <!-- Message Icon -->
-        <li class="relative mr-4">
-            <button onclick="window.location.href='help.php'">
-                <img src="image/massege.png" alt="Message" class="w-12 h-12">
-            </button>
-        </li>
-
-        <!-- Login Icon -->
-        <li class="relative ml-4">
-            <button id="loginButton">
-                <img src="image/useradd.png" alt="User" class="w-12 h-12">
-            </button>
-            <div id="loginDropdown" class="absolute right-0 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
-                <ul class="p-4 space-y-2">
-                    <li>
-                        <button onclick="window.location.href='login_Details.php?form=login'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-700">
-                            Sign in
-                        </button>
-                    </li>
-                    <li>
-                        <button onclick="window.location.href='login_Details.php?form=create'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-700">
-                            Create an Account
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </li>
-
-        
-
-        <!-- Cart Icon with Dropdown -->
-        <li class="relative ml-8">
-            <button id="cartButton">
-                <img src="image/grocery-store.png" alt="Cart" class="w-12 h-12">
-            </button>
-            <!-- Dropdown Menu -->
-            <div id="cartDropdown" class="absolute right-0 hidden bg-white border border-gray-300 rounded-lg shadow-lg w-80">
-                <ul class="p-4 space-y-2">
-                    <li class="text-sm text-gray-700">Cart is empty</li>
-                    <li>
-                        <button class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                            Process Order
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </li>
-    </ul>
-</nav>
+            <!-- help Icon -->
+            <li class="relative mr-4">
+                <p class="text-lg font-semibold ">Your journey isn't complete yet! Secure your order now and let us take care of the rest. See you soon!</p>
+            </li>
+        </ul>
+    </nav>
 
 
 <div class="relative">
@@ -85,7 +42,7 @@
     <div class="max-w-lg text-center">
         <h1 class="mt-5 mb-8 text-6xl font-bold text-black">How can we help?</h1>
         <p class="text-lg text-black ">
-            <strong>A message about delivery times:</strong> With inclement weather conditions throughout the country, delivery times may run longer than usual in some regions. We are committed to delivering your orders as quickly as possible. Contact us any time. We are here for you.
+            <!-- ========= -->
         </p>
     </div>
 </div>

@@ -19,95 +19,65 @@
                 <img src="image/PARADISE2.png" alt="logo" class="h-20 w-36">
             </a>
         </li>
+
         <!-- Search Bar -->
-        <li class="flex-grow pl-6"><input type="text" placeholder="Search..." class="w-2/4 px-4 py-2 border-2 border-black rounded-lg focus:outline-none focus:border-blue-500"></li>
+        <li class="flex-grow pl-6">
+            <input type="text" placeholder="Search..." class="w-2/4 px-4 py-2 border-2 border-black rounded-lg focus:outline-none focus:border-blue-500">
+        </li>
+
+        <!-- Message Icon -->
+        <li class="relative mr-4">
+            <button onclick="window.location.href='help.php'">
+                <img src="image/massege.png" alt="Message" class="w-12 h-12">
+            </button>
+        </li>
 
         <!-- Login Icon -->
         <li class="relative ml-4">
             <button id="loginButton">
                 <img src="image/useradd.png" alt="User" class="w-12 h-12">
             </button>
-            <div id="loginDropdown" class="absolute right-0 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
+            <div id="loginDropdown" class="absolute right-0 z-50 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
                 <ul class="p-4 space-y-2">
-                    <li><button onclick="window.location.href='login_Details.php?form=login'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+                    <li>
+                        <button onclick="window.location.href='login_Details.php?form=login'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-700">
                             Sign in
-                        </button>                           
+                        </button>
                     </li>
-                    
-                    <li><button onclick="window.location.href='login_Details.php?form=create'" class="w-full py-2 mt-2 text-sm font-semibold text-white rounded-lg bg-slate-400 hover:bg-slate-200">
+                    <li>
+                        <button onclick="window.location.href='login_Details.php?form=create'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-700">
                             Create an Account
                         </button>
                     </li>
                 </ul>
             </div>
-        </li> 
+        </li>
+
         
-        
+
         <!-- Cart Icon with Dropdown -->
-        <li class="relative ml-8">
+        <li class="relative z-50 ml-8"> 
             <button id="cartButton">
                 <img src="image/grocery-store.png" alt="Cart" class="w-12 h-12">
             </button>
             <!-- Dropdown Menu -->
-            <div id="cartDropdown" class="absolute right-0 hidden bg-white border border-gray-300 rounded-lg shadow-lg w-80">
+            <div id="cartDropdown" class="absolute right-0 z-50 hidden bg-white border border-gray-300 rounded-lg shadow-lg w-80"> <!-- Add z-50 here as well -->
                 <ul class="p-4 space-y-2">
-                    <li class="text-sm text-gray-700">Cart is empty</li>
-                    <li>
-                        <button class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                            Process Order
-                        </button>
+                    <li class="text-sm text-gray-700">
+                        <div class="px-4 text-center">
+                            <h1 class="mb-4 text-2xl font-semibold text-gray-900">Shopping cart</h1>
+                            <p class="mb-2 text-lg text-gray-700">You don't have any items in your cart.</p>
+                            <p class="text-sm text-gray-500">Have an account? | Sign in to see your items.</p>
+                            <div class="flex justify-center gap-4 mt-6">
+                                <button onclick="window.location.href='login_Details.php?form=login'" class="px-6 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700">Sign in</button>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
         </li>
     </ul>
 </nav>
-
-<section>
-    <div class="relative">
-        <!-- Slider -->
-        <ul id="slider" class="overflow-hidden">
-            <li class="relative">
-                <img class="object-cover w-full h-auto max-h-[40vh]" src="image/heading.jpg" alt="Responsive Image">
-            </li>
-            <li class="relative hidden">
-                <img class="object-cover w-full h-[40vh]" src="image/Headline.png" alt="">
-                <div class="absolute top-0 left-0 flex w-full h-full">
-                    <h1 class="w-full px-5 my-auto text-xl font-bold text-center text-white lg:text-4xl">Welcome to PET-PARADISE.</h1>
-                </div>
-            </li>
-            <li class="relative hidden">
-                <img class="object-cover w-full h-[40vh]" src="image/Headline.png" alt="">
-                <div class="absolute top-0 left-0 flex w-full h-full">
-                    <h1 class="w-full px-5 my-auto text-xl font-bold text-center text-white lg:text-4xl">Welcome to PET-PARADISE.</h1>
-                </div>
-            </li>
-        </ul>
-
-        <!-- Navigation Buttons -->
-        <div class="absolute top-0 left-0 flex w-full h-full px-5">
-            <div class="flex justify-between w-full my-auto">
-                <button id="prev" class="p-2 bg-white rounded-full shadow-lg bg-opacity-30">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                    </svg>
-                </button>
-                <button id="next" class="p-2 bg-white rounded-full shadow-lg bg-opacity-30">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Dots -->
-        <div id="dots" class="absolute flex space-x-2 transform -translate-x-1/2 bottom-5 left-1/2">
-            <span class="w-3 h-3 bg-gray-400 rounded-full dot"></span>
-            <span class="w-3 h-3 bg-gray-400 rounded-full dot"></span>
-            <span class="w-3 h-3 bg-gray-400 rounded-full dot"></span>
-        </div>
-    </div>
-</section>
 
 <div class="w-full p-2 bg-gray-100 ">  </div>
 
@@ -216,65 +186,515 @@
         </svg>
     </div>
 
-    <!-- Main Content -->
+        <!-- Main Content -->
         <div class="flex-1 p-4 bg-indigo-200">
             <!-- Bird Section -->
             <section id="bird" class="hidden content-section">
+            
                 <div>
-                    <h1 class="text-3xl font-bold text-center">Bird Supplies</h1>
-                    <p class="mt-6 text-lg text-center">Manage your categories and items seamlessly using the sidebar.</p>
+                    <h1 class="mb-4 text-3xl font-bold text-center">Bird Supplies</h1>
+                </div>
+                <div class="relative">
+                    <img class="object-cover w-full h-auto max-h-[55vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] min-h-[100px]" src="image/banners/7.png" alt="Welcome Banner">
+                </div>
+                <!-- Item cards -->
+                <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4">
+                     <!-- Card 9 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 9 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Card 10 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 10 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 11 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 11 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 12 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 12 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <!-- Dog Section -->
             <section id="dog" class="hidden content-section">
                 <div>
-                    <h1 class="text-3xl font-bold text-center">Dog Supplies</h1>
-                    <p class="mt-6 text-lg text-center">Manage your categories and items seamlessly using the sidebar.</p>
+                    <h1 class="mb-4 text-3xl font-bold text-center">Dog Supplies</h1>
+                    <div class="relative">
+                        <img class="object-cover w-full h-auto max-h-[55vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] min-h-[100px]" src="image/banners/4.png" alt="Welcome Banner">
+                    </div>
+                    <!-- Item cards -->
+                <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4">
+                     <!-- Card 9 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 9 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Card 10 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 10 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 11 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 11 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 12 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 12 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </section>
 
             <!-- Cat Section -->
             <section id="cat" class="hidden content-section">
                 <div>
-                    <h1 class="text-3xl font-bold text-center">Cat Supplies</h1>
-                    <p class="mt-6 text-lg text-center">Manage your categories and items seamlessly using the sidebar.</p>
+                    <h1 class="mb-4 text-3xl font-bold text-center">Cat Supplies</h1>
+                    <div class="relative">
+                        <img class="object-cover w-full h-auto max-h-[55vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] min-h-[100px]" src="image/banners/5.png" alt="Welcome Banner">
+                    </div>
+                        <!-- Item cards -->
+                <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4">
+                     <!-- Card 9 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 9 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Card 10 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 10 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 11 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 11 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 12 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 12 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </section>
 
             <!-- Fish Section -->
             <section id="fish" class="hidden content-section">
                 <div>
-                    <h1 class="text-3xl font-bold text-center">Fish Supplies</h1>
-                    <p class="mt-6 text-lg text-center">Manage your categories and items seamlessly using the sidebar.</p>
+                    <h1 class="mb-4 text-3xl font-bold text-center">Fish Supplies</h1>
+                    <div class="relative">
+                        <img class="object-cover w-full h-auto max-h-[55vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] min-h-[100px]" src="image/banners/6.png" alt="Welcome Banner">
+                    </div>
+                    <!-- Item cards -->
+                <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4">
+                     <!-- Card 9 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 9 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Card 10 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 10 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 11 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 11 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 12 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 12 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </section>
 
             <!-- Rabbit Section -->
             <section id="rabbit" class="hidden content-section">
                 <div>
-                    <h1 class="text-3xl font-bold text-center">Rabbit Supplies</h1>
-                    <p class="mt-6 text-lg text-center">Manage your categories and items seamlessly using the sidebar.</p>
+                    <h1 class="mb-4 text-3xl font-bold text-center">Rabbit Supplies</h1>
+                    <div class="relative">
+                        <img class="object-cover w-full h-auto max-h-[55vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] min-h-[100px]" src="image/banners/8.png" alt="Welcome Banner">
+                    </div>
+                    <!-- Item cards -->
+                <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4">
+                     <!-- Card 9 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 9 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Card 10 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 10 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 11 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 11 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 12 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 12 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </section>
 
             <!-- Horse Section -->
             <section id="horse" class="hidden content-section">
                 <div>
-                    <h1 class="text-3xl font-bold text-center">Horse Supplies</h1>
-                    <p class="mt-6 text-lg text-center">Manage your categories and items seamlessly using the sidebar.</p>
+                    <h1 class="mb-4 text-3xl font-bold text-center ">Horse Supplies</h1>
+                    <div class="relative">
+                        <img class="object-cover w-full h-auto max-h-[55vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] min-h-[100px]" src="image/banners/9.png" alt="Welcome Banner">
+                    </div>
+                    <!-- Item cards -->
+                <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4">
+                     <!-- Card 9 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 9 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Card 10 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 10 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 11 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 11 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 12 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 12 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </section>
 
             <!-- Farm Animal Section -->
             <section id="farm-animal" class="hidden content-section">
                 <div>
-                    <h1 class="text-3xl font-bold text-center">Farm Animal Supplies</h1>
-                    <p class="mt-6 text-lg text-center">Manage your categories and items seamlessly using the sidebar.</p>
+                    <h1 class="mb-4 text-3xl font-bold text-center">Farm Animal Supplies</h1>
+                    <div class="relative">
+                        <img class="object-cover w-full h-auto max-h-[55vh] sm:max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] min-h-[100px]" src="image/banners/10.png" alt="Welcome Banner">
+                    </div>
+                    <!-- Item cards -->
+                <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4">
+                     <!-- Card 9 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 9 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+
+                    <!-- Card 10 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 10 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 11 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 11 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Card 12 -->
+                    <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg" onclick="openModal('Product name','Description','Price')">
+                        <!-- Image Section -->
+                        <img src="" alt="Product Image" class="object-cover w-full h-48 mb-4 rounded-md">
+                        
+                        <!-- Title -->
+                        <h3 class="mb-2 text-lg font-bold">Card 12 Item name</h3>
+                        <!-- Additional Fields -->
+                        <div class="mt-4">
+                            <p class="text-sm font-semibold text-gray-700">Price: <span class="text-gray-600">Rs. 1,500</span></p>
+                            <p class="text-sm font-semibold text-gray-700">Item Category: <span class="text-gray-600">Food</span></p>
+                        </div>
+                    </div>
+                </div>
                 </div>
             </section>
         </div>
-</div>       
+
+        <!-- larger item display  -->
+    <div id="itemModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-800 bg-opacity-50">
+            <div class="relative w-full max-w-lg mx-auto mt-20 bg-white rounded-lg shadow-lg">
+                <button class="absolute text-gray-600 top-2 right-2 hover:text-red-900" onclick="closeModal()">✖</button>
+                <img id="modalImage" src="https://via.placeholder.com/150" alt="Modal Image" class="w-full h-48 rounded-t-lg">
+                <div class="p-6">
+                    <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                    <p id="modalDescription" class="mt-2 text-gray-600"></p>
+                    <p id="modalPrice" class="mt-4 text-xl font-semibold text-gray-800"></p>
+                    <div class="flex justify-around mt-6">
+                        <a href="cart.php">
+                            <button class="px-3 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Add to Cart</button>
+                        </a>
+                        <a href="paymentex.php">
+                            <button class="px-3 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Buy It Now</button>
+                        </a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>       
 
 <!-- main page footer -->
 <footer class="py-4 mt-0 text-sm text-center text-white bg-slate-700">
@@ -290,6 +710,34 @@
     </footer> 
 
 <script>
+    // Dropdown of Cart
+    const cartButton = document.getElementById('cartButton');
+    const cartDropdown = document.getElementById('cartDropdown');
+
+    cartButton.addEventListener('click', () => {
+        cartDropdown.classList.toggle('hidden');
+    });
+
+    // Close the dropdown if clicked outside
+    window.addEventListener('click', (e) => {
+        if (!cartButton.contains(e.target) && !cartDropdown.contains(e.target)) {
+            cartDropdown.classList.add('hidden');
+        }
+    });
+
+    // dropdown the login
+    const loginButton = document.getElementById('loginButton');
+    const loginDropdown = document.getElementById('loginDropdown');
+
+    loginButton.addEventListener('click', () => {
+        loginDropdown.classList.toggle('hidden');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (!loginButton.contains(e.target) && !loginDropdown.contains(e.target)) {
+            loginDropdown.classList.add('hidden');
+        }
+    });
 
     // Get URL parameter
     const urlParams = new URLSearchParams(window.location.search);
@@ -324,63 +772,20 @@
     });
    
 
-    //image slidings script
-    const slides = document.querySelectorAll('#slider li');
-    const dots = document.querySelectorAll('#dots .dot');
-    let currentIndex = 0;
-    let slideInterval;
+    
 
-    const showSlide = (index) => {
-        slides.forEach((slide, i) => {
-            slide.classList.toggle('hidden', i !== index);
-        });
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('bg-gray-400', i !== index);
-            dot.classList.toggle('bg-gray-700', i === index);
-        });
-    };
+    // Function to open the item in larger display
+    function openModal(title, description, price) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalDescription').textContent = description;
+            document.getElementById('modalPrice').textContent = `$${price}`;
+            document.getElementById('itemModal').classList.remove('hidden');
+        }
 
-    const nextSlide = () => {
-        currentIndex = (currentIndex + 1) % slides.length;
-        showSlide(currentIndex);
-    };
-
-    const prevSlide = () => {
-        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-        showSlide(currentIndex);
-    };
-
-    const startAutoSlide = () => {
-        slideInterval = setInterval(nextSlide, 3000);
-    };
-
-    const stopAutoSlide = () => {
-        clearInterval(slideInterval);
-    };
-
-    document.getElementById('next').addEventListener('click', () => {
-        stopAutoSlide();
-        nextSlide();
-        startAutoSlide();
-    });
-
-    document.getElementById('prev').addEventListener('click', () => {
-        stopAutoSlide();
-        prevSlide();
-        startAutoSlide();
-    });
-
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            stopAutoSlide();
-            currentIndex = index;
-            showSlide(currentIndex);
-            startAutoSlide();
-        });
-    });
-
-    showSlide(currentIndex);
-    startAutoSlide();
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('itemModal').classList.add('hidden');
+        }
 </script>
 
 

@@ -21,25 +21,7 @@
             <p class="text-lg font-semibold">---------</p>
         </div>
         <div class="w-full h-1 border-t-4 border-black"></div>
-        <!-- Notification and Icons -->
-        <div class="flex flex-col items-center mt-6 space-y-4">
-        <span> <button class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6.002 6.002 0 00-4-5.659V4a2 2 0 10-4 0v1.341C7.67 6.165 6 8.388 6 11v3c0 .314-.115.614-.305.839L4 17h11z" />
-                </svg>
-                <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></span>
-            </button>
-            <button>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-            </button>
-            <button>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 16a2 2 0 01-2 2H5l-3 3V6a2 2 0 012-2h14a2 2 0 012 2v10z" />
-                </svg>
-            </button></span>
-        </div>
+        
         <div class="w-full h-1 border-t-4 border-black"></div>
         <!-- Categories -->
         <div class="flex flex-col items-center w-full">
@@ -70,7 +52,7 @@
         <h3 class="mb-4 text-lg font-bold">Inventory</h3>
         <ul class="space-y-2 text-center">
             <li>
-                <a onclick="window.location.href='login_Details.php?form=login'" class="cursor-pointer ">
+                <a onclick="window.location.href='managerlogin.php'" class="cursor-pointer ">
                 <img src="image/inventory.png" alt="Inventory" class="w-16 h-16 mx-auto">
                 Inventory
                 </a>

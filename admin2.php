@@ -1,3 +1,16 @@
+<?php
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {  
+    session_unset();  // Unset all session variables
+    session_destroy(); // Destroy the session
+    header("Location: login_Details.php"); // Redirect to login page
+    exit();
+}
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,11 +29,11 @@
     <!-- Sidebar -->
     <div id="sidebar" class="flex-col items-center hidden w-1/5 min-h-full p-4 space-y-6 text-black transition-all duration-300 ease-in-out bg-white lg:flex">
         <!-- User Info -->
-        <div class="flex flex-col items-center mt-6 space-y-4">
-            <img src="https://via.placeholder.com/80" alt="User" class="w-20 h-20 border-4 border-white rounded-full">
-            <p class="text-lg font-semibold">---------</p>
-        </div>
         <div class="w-full h-1 border-t-4 border-black"></div>
+        
+        <div class="flex flex-col items-center mt-6 space-y-4">
+            <p class="text-lg font-semibold"><?php if (isset($_SESSION["username"])) echo htmlspecialchars($_SESSION["username"]); ?> </p>
+        </div>
         
         <div class="w-full h-1 border-t-4 border-black"></div>
         <!-- Categories -->
@@ -65,13 +78,16 @@
 
         <!-- Logout Button -->
         <div class="mt-auto">
-            <button class="flex items-center mb-auto space-x-1 hover:text-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
-                </svg>
-                Logout
-            </button>
-        </div>
+            <form action="" method="POST">
+                <button type="submit" class="flex items-center mb-auto space-x-1 hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                    </svg>
+                    Logout
+                </button>
+            </form>
+    </div>
+
     </div>
 
     <!-- Collapsed Icon -->

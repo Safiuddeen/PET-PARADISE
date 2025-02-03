@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {  
+    session_unset();  // Unset all session variables
+    session_destroy(); // Destroy the session
+    header("Location: login_Details.php"); // Redirect to login page
+    exit();
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +29,7 @@
     <div id="sidebar" class="flex-col items-center hidden w-1/5 min-h-full p-4 space-y-6 text-black transition-all duration-300 ease-in-out bg-white lg:flex">
        
         <div class="w-full h-1 border-t-4 border-black"></div>
-        
+        <p class="text-lg font-semibold text-orange-600">Manager -: <?php if (isset($_SESSION["username"])) echo htmlspecialchars($_SESSION["username"]); ?>. </p>
         <div class="w-full h-1 border-t-4 border-black"></div>
         <!-- Categories -->
         <div class="flex flex-col items-center w-full">
@@ -61,13 +73,15 @@
 
         <!-- Logout Button -->
         <div class="mt-auto">
-            <button class="flex items-center mb-auto space-x-1 hover:text-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
-                </svg>
-                Logout
-            </button>
-        </div>
+            <form action="" method="POST">
+                <button type="submit" class="flex items-center mb-auto space-x-1 hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
+                    </svg>
+                    Logout
+                </button>
+            </form>
+    </div>
     </div>
 
     <!-- Collapsed Icon -->

@@ -4,6 +4,7 @@ session_start();
 include("connection.php");
 
 // Initialize error variables
+$fullname = $username =  $email = $gender = $contactnum = $password = "";
 $fullnameErr = $usernameErr = $emailErr = $genderErr = $contactnumErr = $passwordErr = "";
 
 // Handle Registration

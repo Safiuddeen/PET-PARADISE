@@ -94,14 +94,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Main Content -->
         <div class="flex-1 p-4 bg-indigo-200">
             <!-- Default Welcome Content -->
-            <div id="welcome" class="content-section">
-                <h1 class="text-3xl font-bold text-center">Welcome to Inventory Managment Dashboard</h1>
-                <h2 class="mt-4 text-2xl text-center">PetParadise</h2>
-                <p class="mt-6 text-lg text-center"></p>
-                
+            <div id="welcome" class="bg-white content-section">
+                <!-- Navbar -->
+                <nav class="bg-white">
+                    <ul class="flex flex-wrap items-center justify-between w-full p-4">
+                        <!-- Para -->
+                        <li class="flex-grow text-center">
+                            <!-- Display as smaller text on small screens -->
+                            <p class="hidden text-xs font-medium text-gray-700 sm:text-lg sm:block">
+                            Welcome to Inventory Managment Dashboard <br>PetParadise   </p>
+                        </li>
+                    </ul>
+                </nav>
+                <nav class=" bg-slate-600">
+                    <ul class="flex flex-wrap items-center justify-between w-full p-2">
+                        <li><button onclick="showContent('admin')" class="text-white hover:underline">Admin Manage</button></li>
+                        <li><button onclick="showContent('customer')" class="text-white hover:underline">Customer Manage</button></li>
+                        <li><button onclick="showContent('supplier')" class="text-white hover:underline">Suplier Manage</button></li>
+                    </ul>
+                </nav>
+                            
             </div>  
         
-
         <!-- Category-Specific Content -->
         <!-- DOG -->
         <div id="dog" class="hidden content-section">
@@ -277,6 +291,79 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>            
             <br><br><br><br>
         </div>
+        <!-- ADMIN -->
+<div id="admin" class="flex flex-col items-center hidden min-h-screen content-section">
+    <h1 class="w-full mb-4 text-2xl font-bold text-center">Admin Managing</h1>
+
+    <div class="w-full px-4">
+        <h3 class="text-xl font-bold text-center">Add Admin</h3>
+
+        <div class="flex justify-center">
+            <form action="" method="POST" class="flex flex-col p-6 mt-10 rounded-lg shadow-lg w-96 bg-slate-800/25">
+                <p class="self-center text-3xl font-bold">Add admin</p><br>
+                <p class="text-sm text-red-700 error">* Required field</p>
+
+                <!-- Full Name -->
+                <label class="font-semibold text-black">Full Name:</label>
+                <input type="text" name="fullname" required placeholder="Full Name" class="w-full px-4 py-2 mb-2 border rounded focus:ring-2 focus:ring-black">
+                <span class="text-sm text-red-500 error"><?php echo $fullnameErr; ?></span><br>
+
+                <!-- Username -->
+                <label class="font-semibold text-black">Username:</label>
+                <input type="text" name="username" required placeholder="Username" class="w-full px-4 py-2 mb-2 border rounded focus:ring-2 focus:ring-black">
+                <span class="text-sm text-red-500 error"><?php echo $usernameErr; ?></span><br>
+
+                <!-- Email -->
+                <label class="font-semibold text-black">Email:</label>
+                <input type="email" name="email" required placeholder="Email" class="w-full px-4 py-2 mb-2 border rounded focus:ring-2 focus:ring-black">
+                <span class="text-sm text-red-500 error"><?php echo $emailErr; ?></span><br>
+
+                <!-- Gender -->
+                <label class="font-semibold text-black">Gender:</label>
+                <div>
+                    <input type="radio" name="gender" value="Male" required> Male
+                    <input type="radio" name="gender" value="Female" required class="ml-4"> Female
+                    <input type="radio" name="gender" value="Other" required class="ml-4"> Other
+                </div>
+                <span class="text-sm text-red-500 error"><?php echo $genderErr; ?></span><br>
+
+                <!-- Contact Number -->
+                <label class="mt-2 font-semibold text-black">Contact Number:</label>
+                <input type="text" name="contactnum" required placeholder="Contact Number" class="w-full px-4 py-2 mb-2 border rounded focus:ring-2 focus:ring-black">
+                <span class="text-sm text-red-500 error"><?php echo $contactnumErr; ?></span><br>
+
+                <!-- Password -->
+                <label class="font-semibold text-black">Password:</label>
+                <input type="password" name="password" required placeholder="Password" class="w-full px-4 py-2 mb-2 border rounded focus:ring-2 focus:ring-black">
+                <span class="text-sm text-red-500 error"><?php echo $passwordErr; ?></span><br>
+
+                <!-- Submit Button -->
+                <button type="submit" name="register" class="px-6 py-2 text-white bg-blue-500 rounded-2xl hover:bg-blue-600">
+                    Create New Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin list Table -->
+    <div class="w-full px-4 mt-8">
+        <h3 class="text-xl font-semibold text-center">Pre-Orders</h3>
+        <table class="w-full mt-4 border border-collapse border-gray-300 table-auto">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="px-4 py-2 border border-gray-300">Admin ID</th>
+                    <th class="px-4 py-2 border border-gray-300">Admin FullName</th>
+                    <th class="px-4 py-2 border border-gray-300">Email</th>
+                    <th class="px-4 py-2 border border-gray-300">Gender</th>
+                    <th class="px-4 py-2 border border-gray-300">Contact-Number</th>
+                    <th class="px-4 py-2 border border-gray-300">Actions</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+            
         
     </div>
 </div>

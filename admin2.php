@@ -1,13 +1,123 @@
 <?php
 session_start();
+include("connection.php");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {  
-    session_unset();  // Unset all session variables
-    session_destroy(); // Destroy the session
-    header("Location: login_Details.php"); // Redirect to login page
+// Check if the user is logged in
+if (isset($_SESSION["username"])) {
+    $user=($_SESSION["username"]);
+} 
+// Logout functionality
+if (isset($_POST['logout'])) { 
+    session_unset();  
+    session_destroy();
+    header("Location: login_Details.php");
     exit();
 }
+
+// Function to calculate the original price
+function calculateOriginalPrice($price, $discount) {
+    return round($price - $discount, 2);
+}
+
+// Initialize variables
+$item_id = $item_name = $price = $discount = $original_price = $quantity = "";
+$item_category = $pet_category = $description = "";
+$item_image = NULL;
+$search = "";
+$result = null;
+
+// **Insert Item**
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    // **Add Item**
+    if (isset($_POST["additem"])) {
+        $item_name = $_POST["itemname"] ?? "";
+        $price = $_POST["price"] ?? 0;
+        $discount = $_POST["discount"] ?? 0;
+        $original_price = calculateOriginalPrice($price, $discount);
+        $quantity = $_POST["quantity"] ?? 0;
+        $item_category = $_POST["item_category"] ?? "";
+        $pet_category = $_POST["pet_category"] ?? "";
+        $description = $_POST["description"] ?? "";
+
+        // Handling image upload
+        if (isset($_FILES["itemimage"]) && $_FILES["itemimage"]["size"] > 0) {
+            $image_tmp = $_FILES["itemimage"]["tmp_name"];
+            $item_image = file_get_contents($image_tmp); // Read binary data
+        }
+
+        // SQL Query to insert data
+        $sql = "INSERT INTO item (item_name, price, discount, original_price, quantity, item_image, category, item_category, description)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sdddibsss", $item_name, $price, $discount, $original_price, $quantity, $item_image, $pet_category, $item_category, $description);
+        $stmt->send_long_data(5, $item_image);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Item added successfully!');</script>";
+        } else {
+            echo "<script>alert('Error adding item: " . $stmt->error . "');</script>";
+        }
+        $stmt->close();
+    }
+
+    // **Update Item**
+    if (isset($_POST["updateitem"])) {
+        $item_id = $_POST["itemid"] ?? "";
+        $item_name = $_POST["itemname"] ?? "";
+        $price = $_POST["price"] ?? 0;
+        $discount = $_POST["discount"] ?? 0;
+        $original_price = calculateOriginalPrice($price, $discount);
+        $quantity = $_POST["quantity"] ?? 0;
+        $item_category = $_POST["item_category"] ?? "";
+        $pet_category = $_POST["pet_category"] ?? "";
+        $description = $_POST["description"] ?? "";
+
+        $sql = "UPDATE item SET item_name=?, original_price=?, price=?, discount=?, quantity=?, category=?, item_category=?, description=? WHERE item_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sddisssss", $item_name, $original_price, $price, $discount, $quantity, $pet_category, $item_category, $description, $item_id);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Item updated successfully!');</script>";
+        } else {
+            echo "<script>alert('Error updating item: " . $conn->error . "');</script>";
+        }
+        $stmt->close();
+    }
+
+    // **Delete Item**
+    if (isset($_POST["deleteitem"])) {
+        $item_id = $_POST["itemid"] ?? "";
+
+        $sql = "DELETE FROM item WHERE item_id=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $item_id);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Item deleted successfully!');</script>";
+        } else {
+            echo "<script>alert('Error deleting item: " . $conn->error . "');</script>";
+        }
+        $stmt->close();
+    }
+
+    // **Search Item**
+    if (isset($_POST["searchitem"])) {
+        $search = $_POST["search"] ?? "";
+        $sql = "SELECT * FROM item WHERE item_id LIKE ? OR item_name LIKE ?";
+        $stmt = $conn->prepare($sql);
+        $search_param = "%$search%";
+        $stmt->bind_param("ss", $search_param, $search_param);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    }
+}
+
+$conn->close();
 ?>
+
+
 
 
 
@@ -32,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="w-full h-1 border-t-4 border-black"></div>
         
         <div class="flex flex-col items-center mt-6 space-y-4">
-            <p class="text-lg font-semibold"><?php if (isset($_SESSION["username"])) echo htmlspecialchars($_SESSION["username"]); ?> </p>
+            <p class="text-lg font-semibold"><?php echo $user; ?> </p>
         </div>
         
         <div class="w-full h-1 border-t-4 border-black"></div>
@@ -79,7 +189,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <!-- Logout Button -->
         <div class="mt-auto">
             <form action="" method="POST">
-                <button type="submit" class="flex items-center mb-auto space-x-1 hover:text-gray-200">
+                <button type="submit"  name="logout" class="flex items-center mb-auto space-x-1 hover:text-gray-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
                     </svg>
@@ -203,7 +313,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h1 class="mb-4 text-2xl font-bold text-center">Dog Items</h1>
             <p class="mb-6 text-center">Details about dogs and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="POST">
                 <!-- Search Bar -->
                 <div class="flex items-center justify-between mb-6">
                     <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
@@ -243,13 +353,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="mb-4">
                     <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)"/>
+                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)" required/>
                     <img id="preview" src="#" alt="Image preview" class="hidden max-w-xs mx-auto mt-4"/>
                 </div>
 
+
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="pet_category" placeholder="Pet Category"/>
+                <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
+                    <select class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="pet_category">
+                    <option value="">Select Pet Category</option>
+                    <option value="Dogs">Dogs</option>
+                    </select>
                 </div>
 
                 <div class="mb-4">
@@ -272,35 +386,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <!-- Buttons -->
                 <div class="flex items-center justify-between">
-                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
-                        Add Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
-                        Update Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
-                        Delete Item
-                    </button>
-                </div>
+        <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
+            Add Item
+        </button>
+        <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
+            Update Item
+        </button>
+        <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
+            Delete Item
+        </button>
+    </div>
             </form>
             <br>
             <br>
-                <div class="mt-8">
-                    <h3 class="text-xl font-bold ">View all items</h3>
-                    <table class="w-full mt-4 border border-collapse border-black table-auto">
-                        <thead class="bg-gray-200">
-                            <tr>
-                                <th class="border border-black">Item ID</th>
-                                <th class="border border-black">Item Name</th>  
-                                <th class="border border-black">Price</th>
-                                <th class="border border-black">Discount</th>
-                                <th class="border border-black">Quantity</th>
-                                <th class="border border-black">Item Image</th>
-                                <th class="border border-black">Item Category</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>            
+            <div class="mt-8">
+    <h3 class="text-xl font-bold">View all items</h3>
+    <table class="w-full mt-4 border border-collapse border-black table-auto">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="px-4 py-2 border border-black">Item ID</th>
+                <th class="px-4 py-2 border border-black">Item Name</th>  
+                <th class="px-4 py-2 border border-black">Price</th>
+                <th class="px-4 py-2 border border-black">Discount</th>
+                <th class="px-4 py-2 border border-black">Actual Price</th>
+                <th class="px-4 py-2 border border-black">Quantity</th>
+                <th class="px-4 py-2 border border-black">Item Image</th>
+                <th class="px-4 py-2 border border-black">Item Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                include "connection.php"; // Include database connection file
+
+                // Fetch all items from the database
+                $sql = "SELECT * FROM item WHERE category = 'Dogs'";
+
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<tr>";
+                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["item_id"]) . "</td>";
+                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["item_name"]) . "</td>";
+                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["price"]) . "</td>";
+                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["discount"]) . "</td>";
+                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["original_price"]) . "</td>";
+                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["quantity"]) . "</td>";
+
+                        // Convert image to base64 for display
+                        if (!empty($row["item_image"])) {
+                            $imageData = base64_encode($row["item_image"]);
+                            echo "<td class='px-4 py-2 border border-black'><img src='data:image/jpeg;base64, $imageData' class='object-cover w-16 h-16'/></td>";
+                        } else {
+                            echo "<td class='px-4 py-2 text-center border border-black'>No Image</td>";
+                        }
+                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["category"]) . "</td>";
+                        echo "</tr>";
+                        }
+                        } else {
+                            echo "<tr><td colspan='7' class='px-4 py-2 text-center border border-black'>No items found</td></tr>";
+                        }
+
+                        $conn->close();
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        
             <br><br><br><br>
         </div>
 
@@ -972,52 +1124,21 @@ function previewImage(event) {
     }
 }
 
-// Function to remove the image preview and reset input
-function removeImage() {
-    const preview = document.getElementById('preview'); // Image preview element
-    const fileInput = document.querySelector('input[name="itemimage"]'); // File input element
-    const removeButton = document.getElementById('remove-button'); // Remove button
-    const fileLabel = document.getElementById('file-label'); // Label for the file name
-
-    preview.src = ''; // Clear the image source
-    preview.classList.add('hidden'); // Hide the preview image
-    fileInput.value = ''; // Reset the file input field
-    removeButton.classList.add('hidden'); // Hide the remove button
-    fileLabel.textContent = 'No file chosen'; // Reset the file label
+function previewImage(event) {
+    var reader = new FileReader();
+    reader.onload = function () {
+        var img = document.getElementById("preview");
+        img.src = reader.result;
+        img.classList.remove("hidden"); // Make image visible
+    };
+    reader.readAsDataURL(event.target.files[0]);
 }
 
 
 
 
-    // JavaScript function to update the date and time
-    function updateDateTime() {
-            const now = new Date();
-            const dateOptions = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-            };
-            const weekdayOptions ={
-                weekday: 'long',
-            };
-            const timeOptions = {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true,
-            };
 
-            const formattedDate = now.toLocaleDateString('en-US', dateOptions);
-            const formattedweekday = now.toLocaleDateString('en-US', weekdayOptions);
-            const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
-
-            document.getElementById("date").textContent = formattedDate;
-            document.getElementById("weekday").textContent = formattedweekday;
-            document.getElementById("time").textContent = formattedTime;
-        }
-
-        // Call the function every second to update the time
-        setInterval(updateDateTime, 1000);
+    
 </script>
 
 </body>

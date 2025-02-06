@@ -1,0 +1,40 @@
+<?php
+
+include("connection.php");
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["additem"])) {
+    $item_name = $_POST["itemname"];
+    $price = $_POST["price"];
+    $discount = $_POST["discount"];
+    $original_price = $price - $discount;
+    $quantity = $_POST["quantity"];
+    $item_category = $_POST["item_category"];
+    $pet_category = $_POST["pet_category"];
+    $description = $_POST["description"];
+
+    // Process Image Upload
+    if (isset($_FILES["itemimage"]) && $_FILES["itemimage"]["size"] > 0) {
+        $image_tmp = $_FILES["itemimage"]["tmp_name"];
+        $item_image = file_get_contents($image_tmp); // Read image as binary
+
+        $sql = "INSERT INTO item (item_name, price, discount, original_price, quantity, item_image, category, item_category, description)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sdddibsss", $item_name, $price, $discount, $original_price, $quantity, $null, $pet_category, $item_category, $description);
+        $stmt->send_long_data(5, $item_image);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Item uploaded successfully!'); window.location.href='index.php';</script>";
+        } else {
+            echo "<script>alert('Upload failed: " . $stmt->error . "');</script>";
+        }
+
+        $stmt->close();
+    } else {
+        echo "<script>alert('Please upload an image.');</script>";
+    }
+}
+
+$conn->close();
+?>

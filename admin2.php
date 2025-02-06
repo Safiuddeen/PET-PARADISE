@@ -6,6 +6,7 @@ include("connection.php");
 if (isset($_SESSION["username"])) {
     $user=($_SESSION["username"]);
 } 
+
 // Logout functionality
 if (isset($_POST['logout'])) { 
     session_unset();  
@@ -14,108 +15,43 @@ if (isset($_POST['logout'])) {
     exit();
 }
 
-// Function to calculate the original price
-function calculateOriginalPrice($price, $discount) {
-    return round($price - $discount, 2);
-}
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["additem"])) {
+    $item_name = $_POST["itemname"];
+    $price = $_POST["price"];
+    $discount = $_POST["discount"];
+    $original_price = $price - $discount;
+    $quantity = $_POST["quantity"];
+    $item_category = $_POST["item_category"];
+    $pet_category = $_POST["pet_category"];
+    $description = $_POST["description"];
 
-// Initialize variables
-$item_id = $item_name = $price = $discount = $original_price = $quantity = "";
-$item_category = $pet_category = $description = "";
-$item_image = NULL;
-$search = "";
-$result = null;
+    // Process Image Upload
+    if (isset($_FILES["itemimage"]) && $_FILES["itemimage"]["size"] > 0) {
+        $image_tmp = $_FILES["itemimage"]["tmp_name"];
+        $item_image = file_get_contents($image_tmp); // Read image as binary
 
-// **Insert Item**
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // **Add Item**
-    if (isset($_POST["additem"])) {
-        $item_name = $_POST["itemname"] ?? "";
-        $price = $_POST["price"] ?? 0;
-        $discount = $_POST["discount"] ?? 0;
-        $original_price = calculateOriginalPrice($price, $discount);
-        $quantity = $_POST["quantity"] ?? 0;
-        $item_category = $_POST["item_category"] ?? "";
-        $pet_category = $_POST["pet_category"] ?? "";
-        $description = $_POST["description"] ?? "";
-
-        // Handling image upload
-        if (isset($_FILES["itemimage"]) && $_FILES["itemimage"]["size"] > 0) {
-            $image_tmp = $_FILES["itemimage"]["tmp_name"];
-            $item_image = file_get_contents($image_tmp); // Read binary data
-        }
-
-        // SQL Query to insert data
         $sql = "INSERT INTO item (item_name, price, discount, original_price, quantity, item_image, category, item_category, description)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdddibsss", $item_name, $price, $discount, $original_price, $quantity, $item_image, $pet_category, $item_category, $description);
+        $stmt->bind_param("sdddibsss", $item_name, $price, $discount, $original_price, $quantity, $null, $pet_category, $item_category, $description);
         $stmt->send_long_data(5, $item_image);
 
         if ($stmt->execute()) {
-            echo "<script>alert('Item added successfully!');</script>";
+            echo "<script>alert('Item uploaded successfully!'); window.location.href='index.php';</script>";
         } else {
-            echo "<script>alert('Error adding item: " . $stmt->error . "');</script>";
+            echo "<script>alert('Upload failed: " . $stmt->error . "');</script>";
         }
+
         $stmt->close();
-    }
-
-    // **Update Item**
-    if (isset($_POST["updateitem"])) {
-        $item_id = $_POST["itemid"] ?? "";
-        $item_name = $_POST["itemname"] ?? "";
-        $price = $_POST["price"] ?? 0;
-        $discount = $_POST["discount"] ?? 0;
-        $original_price = calculateOriginalPrice($price, $discount);
-        $quantity = $_POST["quantity"] ?? 0;
-        $item_category = $_POST["item_category"] ?? "";
-        $pet_category = $_POST["pet_category"] ?? "";
-        $description = $_POST["description"] ?? "";
-
-        $sql = "UPDATE item SET item_name=?, original_price=?, price=?, discount=?, quantity=?, category=?, item_category=?, description=? WHERE item_id=?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sddisssss", $item_name, $original_price, $price, $discount, $quantity, $pet_category, $item_category, $description, $item_id);
-
-        if ($stmt->execute()) {
-            echo "<script>alert('Item updated successfully!');</script>";
-        } else {
-            echo "<script>alert('Error updating item: " . $conn->error . "');</script>";
-        }
-        $stmt->close();
-    }
-
-    // **Delete Item**
-    if (isset($_POST["deleteitem"])) {
-        $item_id = $_POST["itemid"] ?? "";
-
-        $sql = "DELETE FROM item WHERE item_id=?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $item_id);
-
-        if ($stmt->execute()) {
-            echo "<script>alert('Item deleted successfully!');</script>";
-        } else {
-            echo "<script>alert('Error deleting item: " . $conn->error . "');</script>";
-        }
-        $stmt->close();
-    }
-
-    // **Search Item**
-    if (isset($_POST["searchitem"])) {
-        $search = $_POST["search"] ?? "";
-        $sql = "SELECT * FROM item WHERE item_id LIKE ? OR item_name LIKE ?";
-        $stmt = $conn->prepare($sql);
-        $search_param = "%$search%";
-        $stmt->bind_param("ss", $search_param, $search_param);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    } else {
+        echo "<script>alert('Please upload an image.');</script>";
     }
 }
 
 $conn->close();
 ?>
+
 
 
 
@@ -453,7 +389,7 @@ $conn->close();
                 </table>
             </div>
         
-            <br><br><br><br>
+            <br><br><br><br> <br>
         </div>
 
         <!-- CAT -->
@@ -461,7 +397,7 @@ $conn->close();
             <h1 class="mb-4 text-2xl font-bold text-center">Cat Items</h1>
             <p class="mb-6 text-center">Details about cat and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
+            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="GET" enctype="multipart/form-data">
                 <!-- Search Bar -->
                 <div class="flex items-center justify-between mb-6">
                     <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>

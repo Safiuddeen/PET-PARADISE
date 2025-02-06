@@ -7,54 +7,76 @@ include("connection.php");
 $fullname = $username =  $email = $gender = $contactnum = $password = "";
 $fullnameErr = $usernameErr = $emailErr = $genderErr = $contactnumErr = $passwordErr = "";
 
+// Function to sanitize input data
+function test_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
 // Handle Registration
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
-    $fullname = trim($_POST["fullname"]);
-    $username = trim($_POST["username"]);
-    $email = trim($_POST["email"]);
-    $gender = $_POST["gender"] ?? "";
-    $contactnum = trim($_POST["contactnum"]);
-    $password = $_POST["password"];
-
     // Validate Full Name
-    if (empty($fullname)) {
-        $fullnameErr = "Full Name is required.";
-    } elseif (!preg_match("/^[a-zA-Z-' ]*$/", $fullname)) {
-        $fullnameErr = "Only letters and white space allowed.";
+    if (empty($_POST["fullname"])) {
+        $fullnameErr = "Name is required";
+    } else {
+        $fullname = test_input($_POST["fullname"]);
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $fullname)) {
+            $fullnameErr = "Only letters and white space allowed";
+        }
     }
 
+    
+
     // Validate Username
-    if (empty($username)) {
-        $usernameErr = "Username is required.";
-    } elseif (!preg_match("/^[a-zA-Z0-9_]*$/", $username)) {
-        $usernameErr = "Only letters, numbers, and underscores allowed.";
+    if (empty($_POST["username"])) {
+        $usernameErr = "Name is required";
+    } else {
+        $username = test_input($_POST["username"]);
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $username)) {
+            $usernameErr = "Only letters and white space allowed";
+        }
     }
 
     // Validate Email
-    if (empty($email)) {
-        $emailErr = "Email is required.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $emailErr = "Invalid email format.";
+    if (empty($_POST["email"])) {
+        $emailErr = "Email is required";
+    } else {
+        $email = test_input($_POST["email"]);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $emailErr = "Invalid email format!";
+        }
     }
 
     // Validate Gender
-    if (empty($gender)) {
-        $genderErr = "Gender is required.";
+    if(empty($_POST["gender"])){
+        $genderErr ="gender is required";
+    }else{
+        $gender =test_input($_POST["gender"]);
     }
 
     // Validate Contact Number
-    if (empty($contactnum)) {
+    if (empty($_POST["contactnum"])) {
         $contactnumErr = "Contact Number is required.";
-    } elseif (!preg_match("/^[0-9]{10}$/", $contactnum)) {
+    } else{
+        $contactnum = test_input($_POST["contactnum"]);
+        if (!preg_match("/^[0-9]{10}$/", $contactnum)) {
         $contactnumErr = "Invalid contact number.";
+        }
     }
 
     // Validate Password
-    if (empty($password)) {
-        $passwordErr = "Password is required.";
-    } elseif (strlen($password) < 8) {
-        $passwordErr = "Password must be at least 8 characters long.";
+    if(empty($_POST["password"])){
+        $passwordErr="Password is Required";
+    }else{
+        $password = test_input($_POST["password"]);
+        if (strlen($password) < 8) {
+            $passwordErr = "Password must be at least 8 characters long";
+        } elseif (!preg_match("/[A-Z]/", $password)) {
+            $passwordErr = "Password must include at least one uppercase letter";
+        }
     }
+
 
     // If no errors, insert data into the database
     if (empty($fullnameErr) && empty($usernameErr) && empty($emailErr) && empty($genderErr) && empty($contactnumErr) && empty($passwordErr)) {
@@ -77,38 +99,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
 
 // Handle Login
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
-    $username = trim($_POST["username"]);
-    $password = $_POST["password"];
-
     // Validate inputs
-    if (empty($username)) {
+    if (empty($_POST["username"])) {
         $usernameErr = "Username is required.";
+    } else {
+        $username = $_POST["username"];
     }
-    if (empty($password)) {
+
+    if (empty($_POST["password"])) {
         $passwordErr = "Password is required.";
+    } else {
+        $password = $_POST["password"];
     }
 
     // If no errors, check credentials
     if (empty($usernameErr) && empty($passwordErr)) {
+        $found = false; // Flag to check if user is found
         $stmt = $conn->prepare("SELECT password FROM create_login WHERE user_name = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
+            // User found in create_login table
             $stmt->bind_result($hashed_password);
             $stmt->fetch();
-
             if (password_verify($password, $hashed_password)) {
                 $_SESSION["username"] = $username;
-                header("Location: index.php"); // Redirect to home
+                header("Location: index.php");
                 exit();
             } else {
-                $passwordErr = "Invalid password.";
+                $passwordErr = "Incorrect password.";
+                $found = true;
             }
-        } else {
-            // If user not found in create_login, check manager table
-            $stmt->close();
+        }
+        $stmt->close();
+
+        // Check in manager table only if not found in create_login
+        if ($found) {
             $stmt = $conn->prepare("SELECT password FROM manager WHERE user_name = ?");
             $stmt->bind_param("s", $username);
             $stmt->execute();
@@ -127,11 +155,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
             } else {
                 $usernameErr = "User not found.";
             }
+            $stmt->close();
         }
-        $stmt->close();
     }
 }
 $conn->close();
+
 ?>
 
 <!DOCTYPE html>

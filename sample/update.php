@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["updateitem"])) {
     $original_price = $price - $discount;
     $quantity = $_POST["quantity"];
     $item_category = $_POST["item_category"];
-    $pet_category = $_POST["category"]; // Renamed to match DB structure
+    $pet_category = $_POST["pet_category"]; // Renamed to match DB structure
     $description = $_POST["description"];
 
     // Check if a new image is uploaded
@@ -19,13 +19,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["updateitem"])) {
 
         $sql = "UPDATE item SET 
                     item_name=?, price=?, discount=?, original_price=?, 
-                    quantity=?, item_category=?, category=?, description=?, 
-                    item_image=? 
+                    quantity=?, item_image=?,  category=?, description=?,item_category=?, 
+                    
                 WHERE item_id=?";
         
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sdddibssbi", $item_name, $price, $discount, $original_price, 
-                          $quantity, $item_category, $category, $description, $item_id);
+                          $quantity, $item_image, $item_category, $pet_category, $description, $item_id);
         $stmt->send_long_data(8, $item_image);
     } else {
         // Update all fields except image

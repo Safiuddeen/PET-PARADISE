@@ -6,7 +6,6 @@ include("connection.php");
 if (isset($_SESSION["username"])) {
     $user=($_SESSION["username"]);
 } 
-
 // Logout functionality
 if (isset($_POST['logout'])) { 
     session_unset();  
@@ -15,47 +14,304 @@ if (isset($_POST['logout'])) {
     exit();
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["additem"])) {
-    $item_name = $_POST["itemname"];
-    $price = $_POST["price"];
-    $discount = $_POST["discount"];
-    $original_price = $price - $discount;
-    $quantity = $_POST["quantity"];
-    $item_category = $_POST["item_category"];
-    $pet_category = $_POST["pet_category"];
-    $description = $_POST["description"];
 
-    // Process Image Upload
+// Function to sanitize input data
+function test_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
+// Initialize variables
+$item_name = $price = $discount = $quantity = $item_category = $pet_category = $description = "";
+$item_nameErr = $priceErr = $discountErr = $quantityErr = $item_categoryErr = $pet_categoryErr = $uploadErr = "";
+$uploadSuccess = "";
+$valid = true;
+$item_id = "";
+$item_image = "";
+
+// Handle search
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["searchitem"])) {
+
+     // Validate and sanitize item name
+     if (empty($_POST["search_name"])) {
+        $item_nameErr = "Search Name is required";
+        $valid = false;
+    } else {
+        $search_name = test_input($_POST["search_name"]);
+    }
+    if($valid){
+    $sql = "SELECT * FROM item WHERE (item_name LIKE ? OR item_id LIKE ?)";  
+    $stmt = $conn->prepare($sql);
+    $search_param = "%" . $search_name . "%";  // Assuming $search_name contains input
+    $stmt->bind_param("ss", $search_param, $search_param);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $item = $result->fetch_assoc();
+        // Populate the form with the item details
+        $item_id = $item['item_id'];
+        $item_name = $item['item_name'];
+        $price = $item['price'];
+        $discount = $item['discount'];
+        $quantity = $item['quantity'];
+        $item_image = $item['item_image'];
+        $pet_category = $item['pet_category'];
+        $item_category = $item['item_category'];
+        $description = $item['description'];
+        
+    } else {
+        $uploadErr = "No item found with that name.";
+    }
+    $stmt->close();
+}
+}
+
+//handle the insert data
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["additem"])) {
+    
+    // Validate and sanitize item name
+    if (empty($_POST["itemname"])) {
+        $item_nameErr = "Name is required";
+        $valid = false;
+    } else {
+        $item_name = test_input($_POST["itemname"]);
+    }
+    
+    // Validate price
+    if (empty($_POST["price"])) {
+        $priceErr = "Price is required";
+        $valid = false;
+    } else {
+        $price = test_input($_POST["price"]);
+        if (!is_numeric($price)) {
+            $priceErr = "Price must be a number";
+            $valid = false;
+        }
+    }
+    
+    // Validate discount (optional; default to 0)
+    if (empty($_POST["discount"])) {
+        $discount = 0;
+    } else {
+        $discount = test_input($_POST["discount"]);
+        if (!is_numeric($discount)) {
+            $discountErr = "Discount must be a number";
+            $valid = false;
+        }
+    }
+    
+    // Validate quantity
+    if (empty($_POST["quantity"])) {
+        $quantityErr = "Quantity is required";
+        $valid = false;
+    } else {
+        $quantity = test_input($_POST["quantity"]);
+        if (!is_numeric($quantity)) {
+            $quantityErr = "Quantity must be a number";
+            $valid = false;
+        }
+    }
+    
+    // Validate item category
+    if (empty($_POST["item_category"])) {
+        $item_categoryErr = "Item Category is required";
+        $valid = false;
+    } else {
+        $item_category = test_input($_POST["item_category"]);
+    }
+    
+    // Validate pet category
+    if (empty($_POST["pet_category"])) {
+        $pet_categoryErr = "Pet Category is required";
+        $valid = false;
+    } else {
+        $pet_category = test_input($_POST["pet_category"]);
+    }
+    
+    // Description (optional)
+    if (empty($_POST["description"])) {
+        $description = "";
+    } else {
+        $description = test_input($_POST["description"]);
+    }
+    
+    // Process image file upload
     if (isset($_FILES["itemimage"]) && $_FILES["itemimage"]["size"] > 0) {
         $image_tmp = $_FILES["itemimage"]["tmp_name"];
-        $item_image = file_get_contents($image_tmp); // Read image as binary
-
-        $sql = "INSERT INTO item (item_name, price, discount, original_price, quantity, item_image, category, item_category, description)
+        $item_image = file_get_contents($image_tmp); // Read binary data
+    } else {
+        $uploadErr = "Please upload an image.";
+        $valid = false;
+    }
+    
+    // If all validations pass, insert the data into the database
+    if ($valid) {
+        $original_price = $price - $discount; // Calculate original price
+        
+        $sql = "INSERT INTO item (item_name, price, discount, original_price, quantity, item_image, pet_category, item_category, description)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+        
         $stmt = $conn->prepare($sql);
+        // Use $null as placeholder for blob data in bind_param; send_long_data will fill it in.
+        $null = NULL;
         $stmt->bind_param("sdddibsss", $item_name, $price, $discount, $original_price, $quantity, $null, $pet_category, $item_category, $description);
         $stmt->send_long_data(5, $item_image);
-
+        
         if ($stmt->execute()) {
-            echo "<script>alert('Item uploaded successfully!'); window.location.href='index.php';</script>";
+            $uploadSuccess = "Item uploaded successfully!";
+            $item_name = $price = $discount = $quantity = $item_category = $pet_category = $description = "";
+            $item_image = "";
         } else {
-            echo "<script>alert('Upload failed: " . $stmt->error . "');</script>";
+            $uploadErr = "Upload failed: " . $stmt->error;
         }
-
         $stmt->close();
-    } else {
-        echo "<script>alert('Please upload an image.');</script>";
     }
 }
 
+// Handle item update
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["updateitem"])) {
+    // Validate inputs (same as for additem)
+    if (empty($_POST["itemname"])) {
+        $item_nameErr = "Name is required";
+        $valid = false;
+    } else {
+        $item_name = test_input($_POST["itemname"]);
+    }
+
+    if (empty($_POST["price"])) {
+        $priceErr = "Price is required";
+        $valid = false;
+    } else {
+        $price = test_input($_POST["price"]);
+        if (!is_numeric($price)) {
+            $priceErr = "Price must be a number";
+            $valid = false;
+        }
+    }
+
+    $discount = empty($_POST["discount"]) ? 0 : test_input($_POST["discount"]);
+    if (!is_numeric($discount)) {
+        $discountErr = "Discount must be a number";
+        $valid = false;
+    }
+
+    if (empty($_POST["quantity"])) {
+        $quantityErr = "Quantity is required";
+        $valid = false;
+    } else {
+        $quantity = test_input($_POST["quantity"]);
+        if (!is_numeric($quantity)) {
+            $quantityErr = "Quantity must be a number";
+            $valid = false;
+        }
+    }
+
+    if (empty($_POST["item_category"])) {
+        $item_categoryErr = "Item Category is required";
+        $valid = false;
+    } else {
+        $item_category = test_input($_POST["item_category"]);
+    }
+
+    if (empty($_POST["pet_category"])) {
+        $pet_categoryErr = "Pet Category is required";
+        $valid = false;
+    } else {
+        $pet_category = test_input($_POST["pet_category"]);
+    }
+
+    $description = empty($_POST["description"]) ? "" : test_input($_POST["description"]);
+
+    // Check if a new image was uploaded
+    if (isset($_FILES["itemimage"]) && $_FILES["itemimage"]["size"] > 0) {
+        $image_tmp = $_FILES["itemimage"]["tmp_name"];
+        $item_image = file_get_contents($image_tmp);
+    }
+
+    if ($valid) {
+        $original_price = $price - $discount;
+
+        if (!empty($item_image)) {
+            // If new image is uploaded, update with image
+            $sql = "UPDATE item SET item_name=?, price=?, discount=?, original_price=?, quantity=?, item_image=?, category=?, item_category=?, description=? WHERE item_name=?";
+            $stmt = $conn->prepare($sql);
+            $null = NULL;
+            $stmt->bind_param("sdddibssss", $item_name, $price, $discount, $original_price, $quantity, $null, $pet_category, $item_category, $description, $item_name);
+            $stmt->send_long_data(5, $item_image);
+        } else {
+            // If no new image is uploaded, keep the existing image
+            $sql = "UPDATE item SET item_name=?, price=?, discount=?, original_price=?, quantity=?, pet_category=?, item_category=?, description=? WHERE item_name=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sdddissss", $item_name, $price, $discount, $original_price, $quantity, $pet_category, $item_category, $description, $item_name);
+        }
+
+        if ($stmt->execute()) {
+            $uploadSuccess = "Item updated successfully!";
+            
+            $item_name = $price = $discount = $quantity = $item_category = $pet_category = $description = "";
+            $item_image = "";
+            
+        } else {
+            $uploadErr = "Update failed: " . $stmt->error;
+        }
+
+        $stmt->close();
+    }
+}
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["deleteitem"])) {
+    if (!empty($_POST["itemid"])) {  
+        $item_id = $_POST["itemid"];  // Get item_id from form
+        $sql = "DELETE FROM item WHERE item_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $item_id);
+        
+        if ($stmt->execute()) {
+            echo "<script>alert('Item deleted successfully!'); window.location.href='admin2.php#Data';</script>";
+            $item_id = $item_name = $price = $discount = $quantity = $item_category = $pet_category = $description = "";
+            $item_image = "";
+        } else {
+            echo "<script>alert('Error deleting item!');</script>";
+        }
+        
+        $stmt->close();
+    } else {
+        echo "<script>alert('No item selected for deletion!');</script>";
+    }
+}
+
+
+// Fetch all items from the database to display in table
+$sql = "SELECT * FROM item ";
+$result = $conn->query($sql);
+
+// Fetch all items from the database to display in table
+$sqlDog = "SELECT * FROM item WHERE pet_category='Dogs'";
+$resultDog = $conn->query($sqlDog);
+
+$sqlBird = "SELECT * FROM item WHERE pet_category='Bird'";
+$resultBird = $conn->query($sqlBird);
+
+$sqlCat = "SELECT * FROM item WHERE pet_category='Cat'";
+$resultCat = $conn->query($sqlCat);
+
+$sqlRabbit = "SELECT * FROM item WHERE pet_category='Rabbit'";
+$resultRabbit = $conn->query($sqlRabbit);
+
+$sqlFA = "SELECT * FROM item WHERE pet_category='FarmAnimal'";
+$resultFA = $conn->query($sqlFA);
+
+$sqlFish = "SELECT * FROM item WHERE pet_category='Fish'";
+$resultFish = $conn->query($sqlFish);
+
+$sqlHorse = "SELECT * FROM item WHERE pet_category='Horse'";
+$resultHorse = $conn->query($sqlHorse);
+
 $conn->close();
 ?>
-
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -82,17 +338,33 @@ $conn->close();
         </div>
         
         <div class="w-full h-1 border-t-4 border-black"></div>
+
+         <!-- Categories -->
+         <div class="flex flex-col items-center w-full">
+            <h3 class="mb-4 text-lg font-bold">Data managing</h3>
+            <ul class="space-y-2 text-center">
+                <li>
+                    <a onclick="showContent('Data-section')" class="cursor-pointer ">
+                    <img src="image/data.png" alt="" class="w-16 h-16 mx-auto">
+                    Control Data
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="w-full h-1 border-t-4 border-black"></div>
+
         <!-- Categories -->
         <div class="flex flex-col items-center w-full">
             <h3 class="mb-4 text-lg font-bold">Categories</h3>
             <ul class="space-y-2 text-center">
-            <li><button onclick="showContent('dog')" class="hover:underline">Dog</button></li>
+                <li><button onclick="showContent('dog')" class="hover:underline">Dog</button></li>
                 <li><button onclick="showContent('cat')" class="hover:underline">Cat</button></li>
                 <li><button onclick="showContent('bird')" class="hover:underline">Bird</button></li>
                 <li><button onclick="showContent('rabbit')" class="hover:underline">Rabbit</button></li>
                 <li><button onclick="showContent('fish')" class="hover:underline">Fish</button></li>
-                <li><button onclick="showContent('farm')" class="hover:underline">Farm Animals</button></li>
-                <li><button onclick="showContent('horse')" class="hover:underline">Horses</button></li>
+                <li><button onclick="showContent('farm_animal')" class="hover:underline">Farm Animals</button></li>
+                <li><button onclick="showContent('horse')" class="hover:underline">Horse</button></li>
             </ul>
         </div>
         <div id="backButton" class="hidden mt-4">
@@ -108,16 +380,16 @@ $conn->close();
 
         <!-- Item managment -->
         <div class="flex flex-col items-center w-full">
-        <h3 class="mb-4 text-lg font-bold">Inventory</h3>
-        <ul class="space-y-2 text-center">
-            <li>
-                <a onclick="window.location.href='managerlogin.php'" class="cursor-pointer ">
-                <img src="image/inventory.png" alt="Inventory" class="w-16 h-16 mx-auto">
-                Inventory
-                </a>
-            </li>
-        </ul>
-    </div>
+            <h3 class="mb-4 text-lg font-bold">Inventory</h3>
+            <ul class="space-y-2 text-center">
+                <li>
+                    <a onclick="window.location.href='managerlogin.php'" class="cursor-pointer ">
+                    <img src="image/inventory.png" alt="Inventory" class="w-16 h-16 mx-auto">
+                    Inventory
+                    </a>
+                </li>
+            </ul>
+        </div>
 
 
         <div class="w-full h-1 border-t-4 border-black"></div>
@@ -132,7 +404,7 @@ $conn->close();
                     Logout
                 </button>
             </form>
-    </div>
+        </div>
 
     </div>
 
@@ -170,38 +442,7 @@ $conn->close();
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-center">
-                                <td class="px-4 py-2 border border-gray-300">#1001</td>
-                                <td class="px-4 py-2 border border-gray-300">
-                                    <img src="https://via.placeholder.com/50" alt="Order Image" class="w-12 h-12 mx-auto">
-                                </td>
-                                <td class="px-4 py-2 border border-gray-300">Dog Food</td>
-                                <td class="px-4 py-2 border border-gray-300">10</td>
-                                <td class="px-4 py-2 border border-gray-300">8</td>
-                                <td class="px-4 py-2 border border-gray-300">123 Pet Street, Colombo</td>
-                                <td class="px-4 py-2 border border-gray-300">Rs. 4500</td>
-                                <td class="px-4 py-2 border border-gray-300">Paid</td>
-                                <td class="px-4 py-2 border border-gray-300">
-                                    <button class="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">Deliver</button>
-                                    <button class="px-3 py-1 mt-2 text-white bg-red-500 rounded hover:bg-red-600">Cancel</button>
-                                </td>
-                            </tr>
-                            <tr class="text-center">
-                                <td class="px-4 py-2 border border-gray-300">#1001</td>
-                                <td class="px-4 py-2 border border-gray-300">
-                                    <img src="https://via.placeholder.com/50" alt="Order Image" class="w-12 h-12 mx-auto">
-                                </td>
-                                <td class="px-4 py-2 border border-gray-300">Cat Toy</td>
-                                <td class="px-4 py-2 border border-gray-300">5</td>
-                                <td class="px-4 py-2 border border-gray-300">5</td>
-                                <td class="px-4 py-2 border border-gray-300">456 Kitty Lane, Kandy</td>
-                                <td class="px-4 py-2 border border-gray-300">Rs. 1500</td>
-                                <td class="px-4 py-2 border border-gray-300">Pending</td>
-                                <td class="px-4 py-2 border border-gray-300">
-                                    <button class="px-3 py-1 text-white bg-green-500 rounded hover:bg-green-600">Deliver</button>
-                                    <button class="px-3 py-1 mt-2 text-white bg-red-500 rounded hover:bg-red-600">Cancel</button>
-                                </td>
-                            </tr>
+                            
                         </tbody>
                     </table>
                 </div>
@@ -221,22 +462,7 @@ $conn->close();
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-center">
-                                <td class="px-4 py-2 border border-gray-300">#1001</td>
-                                <td class="px-4 py-2 border border-gray-300">Dog Leash</td>
-                                <td class="px-4 py-2 border border-gray-300">1</td>
-                                <td class="px-4 py-2 border border-gray-300">Rs. 1000</td>
-                                <td class="px-4 py-2 border border-gray-300">2025-01-01</td>
-                                <td class="px-4 py-2 border border-gray-300">Delivered</td>
-                            </tr>
-                            <tr class="text-center">
-                                <td class="px-4 py-2 border border-gray-300">#1002</td>
-                                <td class="px-4 py-2 border border-gray-300">Bird Cage</td>
-                                <td class="px-4 py-2 border border-gray-300">2</td>
-                                <td class="px-4 py-2 border border-gray-300">Rs. 4500</td>
-                                <td class="px-4 py-2 border border-gray-300">2025-01-05</td>
-                                <td class="px-4 py-2 border border-gray-300">Cancelled</td>
-                            </tr>
+                            
                         </tbody>
                     </table>
                 </div>
@@ -245,235 +471,120 @@ $conn->close();
 
         <!-- Category-Specific Content -->
         <!-- DOG -->
-        <div id="dog" class="hidden content-section">
-            <h1 class="mb-4 text-2xl font-bold text-center">Dog Items</h1>
-            <p class="mb-6 text-center">Details about dogs and related items go here.</p>
+        <div id="Data-section" class="hidden content-section">
+            <h1 class="mb-4 text-2xl font-bold text-center">Data Control</h1>
+            <p class="mb-6 text-center">Details about animal data managing please go a head.</p>
+            
+            <form action="" method="POST">
+                <div class="flex items-center justify-between mb-3">
+                <input type="text" name="search_name" id="search_name" placeholder="Search only dog items..." class="w-2/3 px-3 py-2 border rounded ml-28 ">
+                <button type="submit" name="searchitem" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-800 mr-28">Search</button>
+                </div>  
+            </form>   
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="POST">
-                <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-6">
-                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
-                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
-                        Search
-                    </button>
-                </div>
-
-                <p class="mb-4 text-lg font-bold text-center">Add Dog Items</p>
-
-                <!-- Item ID Field -->
+            <form action=" " method="POST" enctype="multipart/form-data" class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md">
+                
+                <p class="mb-4 text-lg font-bold text-center">Search / Add / Update / Delete all animal Items</p>
+                <?php
+                    
+                    if (!empty($uploadSuccess)) {
+                    echo "<p style='color:green;'>$uploadSuccess</p>";
+                    }
+                    if (!empty($item_nameErr) || !empty($priceErr) || !empty($quantityErr) || !empty($item_categoryErr) || !empty($pet_categoryErr) || !empty($uploadErr)) {
+                    echo "<p style='color:red;'>";
+                    echo $item_nameErr . " " . $priceErr . " " . $quantityErr . " " . $item_categoryErr . " " . $pet_categoryErr . " " . $uploadErr;
+                    echo "</p>";
+                    }
+                ?>
+                <!-- Item ID Field (Read-Only, if auto-generated by trigger) -->
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
+                <label for="itemid" class="block mb-2 text-sm font-bold">Item ID:</label>
+                <input type="text" name="itemid" value="<?php echo $item_id; ?>" placeholder="Item ID" readonly class="w-full px-3 py-2 border rounded">
                 </div>
-
+                
                 <!-- Item Name Field -->
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
+                <label for="itemname" class="block mb-2 text-sm font-bold">Item Name:</label>
+                <input type="text" name="itemname" value="<?php echo $item_name; ?>" placeholder="Item Name" required class="w-full px-3 py-2 border rounded">
+                </div>
+                
+                <!-- Price Field -->
+                <div class="mb-4">
+                <label for="price" class="block mb-2 text-sm font-bold">Price:</label>
+                <input type="number" name="price" value="<?php echo $price; ?>" step="0.01" placeholder="0000.00" required class="w-full px-3 py-2 border rounded">
+                </div>
+                
+                <!-- Discount Field -->
+                <div class="mb-4">
+                <label for="discount" class="block mb-2 text-sm font-bold">Discount:</label>
+                <input type="number" name="discount" value="<?php echo $discount; ?>" step="0.01" placeholder="0000.00" class="w-full px-3 py-2 border rounded">
+                </div>
+                
+                <!-- Quantity Field -->
+                <div class="mb-4">
+                <label for="quantity" class="block mb-2 text-sm font-bold">Quantity:</label>
+                <input type="number" name="quantity" value="<?php echo $quantity; ?>" placeholder="Quantity" required class="w-full px-3 py-2 border rounded">
+                </div>
+                
+                <!-- Item Image Field -->
+                <div class="mb-4">
+                <label for="itemimage" class="block mb-2 text-sm font-bold">Item Image:</label>
+                <input type="file" name="itemimage" <?php echo empty($item_image) ? 'required' : ''; ?> class="w-full px-3 py-2 border rounded">
+                <?php if (!empty($item_image)): ?>
+                    <h3>Item Image</h3>
+                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item_image); ?>" width="200"/>
+                <?php endif; ?>
                 </div>
 
+                <!-- Pet-Category Field -->
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="price">Price:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="price" placeholder="0000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)" required/>
-                    <img id="preview" src="#" alt="Image preview" class="hidden max-w-xs mx-auto mt-4"/>
-                </div>
-
-
-                <div class="mb-4">
-                <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
-                    <select class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="pet_category">
-                    <option value="">Select Pet Category</option>
-                    <option value="Dogs">Dogs</option>
+                    <label for="pet_category" class="block mb-2 text-sm font-bold">Pet Category:</label>
+                    <select name="pet_category" required class="w-full px-3 py-2 border rounded">
+                        <option value="" >Select Pet Category</option>
+                        <option value="Dog" <?php if( $pet_category == "Dog") echo "selected"; ?>>Dog</option>
+                        <option value="Cat" <?php if( $pet_category == "Cat") echo "selected"; ?>>Cat</option>
+                        <option value="Bird" <?php if( $pet_category == "Bird") echo "selected"; ?>>Bird</option>
+                        <option value="Rabbit" <?php if( $pet_category == "Rabbit") echo "selected"; ?>>Rabbit</option>
+                        <option value="Fish" <?php if( $pet_category == "Fish") echo "selected"; ?>>Fish</option>
+                        <option value="Horse" <?php if( $pet_category == "Horse") echo "selected"; ?>>Horse</option>
+                        <option value="FarmAnimal" <?php if( $pet_category == "FarmAnimal") echo "selected"; ?>>FarmAnimal</option>
                     </select>
                 </div>
 
+                <!-- Item-Category Field -->
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="item_category">Item Category:</label>
-                    <select class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="item_category">
-                        <option value="" disabled selected>Select Item Category</option>
-                        <option value="Food">Food</option>
-                        <option value="Accessories">Accessories</option>
-                        <option value="Health & Wellness">Health & Wellness</option>
-                        <option value="Housing">Housing</option>
-                        <option value="Specialty Items">Specialty Items</option>
+                    <label for="item_category" class="block mb-2 text-sm font-bold">Item Category:</label>
+                    <select name="item_category" required class="w-full px-3 py-2 border rounded">
+                        <option value="" >Select Item Category</option>
+                        <option value="Food" <?php if($item_category == "Food") echo "selected"; ?>>Food</option>
+                        <option value="Accessories" <?php if($item_category == "Accessories") echo "selected"; ?>>Accessories</option>
+                        <option value="Health & Wellness" <?php if($item_category == "Health & Wellness") echo "selected"; ?>>Health & Wellness</option>
+                        <option value="Housing" <?php if($item_category == "Housing") echo "selected"; ?>>Housing</option>
+                        <option value="Specialty Items" <?php if($item_category == "Specialty Items") echo "selected"; ?>>Specialty Items</option>
                     </select>
                 </div>
 
-
+                
+                <!-- Description Field -->
                 <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="description">Description:</label>
-                    <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
+                    <label for="description" class="block mb-2 text-sm font-bold">Description:</label>
+                    <textarea name="description" rows="5" placeholder="Enter item description here" class="w-full px-3 py-2 border rounded"><?php echo isset($description) ? htmlspecialchars($description) : ''; ?></textarea>
                 </div>
-
-                <!-- Buttons -->
+                
+                <!-- Action Buttons -->
                 <div class="flex items-center justify-between">
-        <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
-            Add Item
-        </button>
-        <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
-            Update Item
-        </button>
-        <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
-            Delete Item
-        </button>
-    </div>
-            </form>
-            <br>
-            <br>
-            <div class="mt-8">
-    <h3 class="text-xl font-bold">View all items</h3>
-    <table class="w-full mt-4 border border-collapse border-black table-auto">
-        <thead class="bg-gray-200">
-            <tr>
-                <th class="px-4 py-2 border border-black">Item ID</th>
-                <th class="px-4 py-2 border border-black">Item Name</th>  
-                <th class="px-4 py-2 border border-black">Price</th>
-                <th class="px-4 py-2 border border-black">Discount</th>
-                <th class="px-4 py-2 border border-black">Actual Price</th>
-                <th class="px-4 py-2 border border-black">Quantity</th>
-                <th class="px-4 py-2 border border-black">Item Image</th>
-                <th class="px-4 py-2 border border-black">Item Category</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-                include "connection.php"; // Include database connection file
-
-                // Fetch all items from the database
-                $sql = "SELECT * FROM item WHERE category = 'Dogs'";
-
-                $result = $conn->query($sql);
-
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["item_id"]) . "</td>";
-                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["item_name"]) . "</td>";
-                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["price"]) . "</td>";
-                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["discount"]) . "</td>";
-                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["original_price"]) . "</td>";
-                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["quantity"]) . "</td>";
-
-                        // Convert image to base64 for display
-                        if (!empty($row["item_image"])) {
-                            $imageData = base64_encode($row["item_image"]);
-                            echo "<td class='px-4 py-2 border border-black'><img src='data:image/jpeg;base64, $imageData' class='object-cover w-16 h-16'/></td>";
-                        } else {
-                            echo "<td class='px-4 py-2 text-center border border-black'>No Image</td>";
-                        }
-                        echo "<td class='px-4 py-2 border border-black'>" . htmlspecialchars($row["category"]) . "</td>";
-                        echo "</tr>";
-                        }
-                        } else {
-                            echo "<tr><td colspan='7' class='px-4 py-2 text-center border border-black'>No items found</td></tr>";
-                        }
-
-                        $conn->close();
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        
-            <br><br><br><br> <br>
-        </div>
-
-        <!-- CAT -->
-        <div id="cat" class="hidden content-section">
-            <h1 class="mb-4 text-2xl font-bold text-center">Cat Items</h1>
-            <p class="mb-6 text-center">Details about cat and related items go here.</p>
-
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="GET" enctype="multipart/form-data">
-                <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-6">
-                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
-                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
-                        Search
-                    </button>
-                </div>
-
-                <p class="mb-4 text-lg font-bold text-center">Add Cat Items</p>
-
-                <!-- Item ID Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
-                </div>
-
-                <!-- Item Name Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="price">Price:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="price" placeholder="0000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)"/>
-                    <img id="preview" src="#" alt="Image preview" class="hidden max-w-xs mx-auto mt-4"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="pet_category" placeholder="Pet Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="item_category">Item Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="item_category" placeholder="Item Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="description">Description:</label>
-                    <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex items-center justify-between">
-                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
-                        Add Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
-                        Update Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
-                        Delete Item
-                    </button>
+                <button type="submit" name="additem" class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-800">Add Item</button>
+                <button type="submit" name="updateitem" class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-800" onclick="return confirmupdate()">Update Item</button>
+                <button type="submit" name="deleteitem" class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-800" onclick="return confirmDelete()">Delete Item</button>
                 </div>
             </form>
+  
+            <hr>
             <br>
             <br>
                 <div class="mt-8">
                     <h3 class="text-xl font-bold ">View all items</h3>
-                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                    <table class="w-full mt-4 border border-collapse border-black table-auto ">
                         <thead class="bg-gray-200">
                             <tr>
                                 <th class="border border-black">Item ID</th>
@@ -483,8 +594,154 @@ $conn->close();
                                 <th class="border border-black">Quantity</th>
                                 <th class="border border-black">Item Image</th>
                                 <th class="border border-black">Item Category</th>
+                                <th class="border border-black">Pet Category</th>
+                                <th class="border border-black">Action</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <?php
+                                if ($result->num_rows > 0) {
+                                    while($item = $result->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $item['item_id']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['price']; ?></td>
+                                            <td><?php echo $item['discount']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td>
+                                                <?php if (!empty($item['item_image'])): ?>  
+                                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
+                                                <?php else: ?>
+                                                    No Image
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $item['item_category']; ?></td>
+                                            <td><?php echo $item['pet_category']; ?></td>
+                                            
+                                            
+                                            <td><Button class="px-1 py-2 text-white rounded bg-cyan-500 hover:bg-cyan-800"  onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</Button></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>            
+            <br><br><br><br>
+        </div>
+
+        <!-- DOG -->
+        <div id="dog" class="hidden content-section">
+            <h1 class="mb-4 text-2xl font-bold text-center">Dog Items</h1>
+            <p class="mb-6 text-center">Details about dogs and related items go here.</p>
+            
+           
+                <div class="mt-1">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto ">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                                <th class="border border-black">Pet Category</th>
+                                <th class="border border-black">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                                if ($resultDog->num_rows > 0) {
+                                    while($item = $resultDog->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $item['item_id']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['price']; ?></td>
+                                            <td><?php echo $item['discount']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td>
+                                                <?php if (!empty($item['item_image'])): ?>  
+                                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
+                                                <?php else: ?>
+                                                    No Image
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $item['item_category']; ?></td>
+                                            <td><?php echo $item['pet_category']; ?></td>
+                                            
+                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>            
+            <br><br><br><br>
+        </div>
+
+        <!-- CAT -->
+        <div id="cat" class="hidden content-section">
+            <h1 class="mb-4 text-2xl font-bold text-center">CAT Items</h1>
+            <p class="mb-6 text-center">Details about CAT and related items go here.</p>
+            
+                <div class="mt-1">
+                    <h3 class="text-xl font-bold ">View all items</h3>
+                    <table class="w-full mt-4 border border-collapse border-black table-auto ">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="border border-black">Item ID</th>
+                                <th class="border border-black">Item Name</th>
+                                <th class="border border-black">Price</th>
+                                <th class="border border-black">Discount</th>
+                                <th class="border border-black">Quantity</th>
+                                <th class="border border-black">Item Image</th>
+                                <th class="border border-black">Item Category</th>
+                                <th class="border border-black">Pet Category</th>
+                                <th class="border border-black">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                                if ($resultCat->num_rows > 0) {
+                                    while($item = $resultCat->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $item['item_id']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['price']; ?></td>
+                                            <td><?php echo $item['discount']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td>
+                                                <?php if (!empty($item['item_image'])): ?>  
+                                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
+                                                <?php else: ?>
+                                                    No Image
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $item['item_category']; ?></td>
+                                            <td><?php echo $item['pet_category']; ?></td>
+                                            
+                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
+                        </tbody>
                     </table>
                 </div>            
             <br><br><br><br>
@@ -494,84 +751,9 @@ $conn->close();
         <div id="bird" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Bird Items</h1>
             <p class="mb-6 text-center">Details about bird and related items go here.</p>
-
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
-                <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-6">
-                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
-                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
-                        Search
-                    </button>
-                </div>
-
-                <p class="mb-4 text-lg font-bold text-center">Add Bird Items</p>
-
-                <!-- Item ID Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
-                </div>
-
-                <!-- Item Name Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="price">Price:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="price" placeholder="0000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)"/>
-                    <img id="preview" src="#" alt="Image preview" class="hidden max-w-xs mx-auto mt-4"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="pet_category" placeholder="Pet Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="item_category">Item Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="item_category" placeholder="Item Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="description">Description:</label>
-                    <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex items-center justify-between">
-                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
-                        Add Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
-                        Update Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
-                        Delete Item
-                    </button>
-                </div>
-            </form>
-            <br>
-            <br>
-                <div class="mt-8">
+                <div class="mt-1">
                     <h3 class="text-xl font-bold ">View all items</h3>
-                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                    <table class="w-full mt-4 border border-collapse border-black table-auto ">
                         <thead class="bg-gray-200">
                             <tr>
                                 <th class="border border-black">Item ID</th>
@@ -581,8 +763,40 @@ $conn->close();
                                 <th class="border border-black">Quantity</th>
                                 <th class="border border-black">Item Image</th>
                                 <th class="border border-black">Item Category</th>
+                                <th class="border border-black">Pet Category</th>
+                                <th class="border border-black">Action</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <?php
+                                if ($resultBird->num_rows > 0) {
+                                    while($item = $resultBird->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $item['item_id']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['price']; ?></td>
+                                            <td><?php echo $item['discount']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td>
+                                                <?php if (!empty($item['item_image'])): ?>  
+                                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
+                                                <?php else: ?>
+                                                    No Image
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $item['item_category']; ?></td>
+                                            <td><?php echo $item['pet_category']; ?></td>
+                                            
+                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
+                        </tbody>
                     </table>
                 </div>            
             <br><br><br><br>
@@ -591,85 +805,11 @@ $conn->close();
         <!-- RABBIT -->
         <div id="rabbit" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Rabbit Items</h1>
-            <p class="mb-6 text-center">Details about rabbit and related items go here.</p>
+            <p class="mb-6 text-center">Details about Rabbit and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
-                <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-6">
-                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
-                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
-                        Search
-                    </button>
-                </div>
-
-                <p class="mb-4 text-lg font-bold text-center">Add Rabbit Items</p>
-
-                <!-- Item ID Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
-                </div>
-
-                <!-- Item Name Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="price">Price:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="price" placeholder="0000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)"/>
-                    <img id="preview" src="#" alt="Image preview" class="hidden max-w-xs mx-auto mt-4"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="pet_category" placeholder="Pet Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="item_category">Item Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="item_category" placeholder="Item Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="description">Description:</label>
-                    <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex items-center justify-between">
-                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
-                        Add Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
-                        Update Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
-                        Delete Item
-                    </button>
-                </div>
-            </form>
-            <br>
-            <br>
-                <div class="mt-8">
+            <div class="mt-1">
                     <h3 class="text-xl font-bold ">View all items</h3>
-                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                    <table class="w-full mt-4 border border-collapse border-black table-auto ">
                         <thead class="bg-gray-200">
                             <tr>
                                 <th class="border border-black">Item ID</th>
@@ -679,8 +819,40 @@ $conn->close();
                                 <th class="border border-black">Quantity</th>
                                 <th class="border border-black">Item Image</th>
                                 <th class="border border-black">Item Category</th>
+                                <th class="border border-black">Pet Category</th>
+                                <th class="border border-black">Action</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <?php
+                                if ($resultRabbit->num_rows > 0) {
+                                    while($item = $resultRabbit->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $item['item_id']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['price']; ?></td>
+                                            <td><?php echo $item['discount']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td>
+                                                <?php if (!empty($item['item_image'])): ?>  
+                                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
+                                                <?php else: ?>
+                                                    No Image
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $item['item_category']; ?></td>
+                                            <td><?php echo $item['pet_category']; ?></td>
+                                            
+                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
+                        </tbody>
                     </table>
                 </div>            
             <br><br><br><br>
@@ -689,85 +861,11 @@ $conn->close();
         <!-- FISH -->
         <div id="fish" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Fish Items</h1>
-            <p class="mb-6 text-center">Details about fish and related items go here.</p>
+            <p class="mb-6 text-center">Details about Fish and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
-                <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-6">
-                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
-                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
-                        Search
-                    </button>
-                </div>
-
-                <p class="mb-4 text-lg font-bold text-center">Add Fish Items</p>
-
-                <!-- Item ID Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
-                </div>
-
-                <!-- Item Name Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="price">Price:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="price" placeholder="0000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)"/>
-                    <img id="preview" src="#" alt="Image preview" class="hidden max-w-xs mx-auto mt-4"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="pet_category" placeholder="Pet Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="item_category">Item Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="item_category" placeholder="Item Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="description">Description:</label>
-                    <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex items-center justify-between">
-                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
-                        Add Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
-                        Update Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
-                        Delete Item
-                    </button>
-                </div>
-            </form>
-            <br>
-            <br>
-                <div class="mt-8">
+            <div class="mt-1">
                     <h3 class="text-xl font-bold ">View all items</h3>
-                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                    <table class="w-full mt-4 border border-collapse border-black table-auto ">
                         <thead class="bg-gray-200">
                             <tr>
                                 <th class="border border-black">Item ID</th>
@@ -777,95 +875,53 @@ $conn->close();
                                 <th class="border border-black">Quantity</th>
                                 <th class="border border-black">Item Image</th>
                                 <th class="border border-black">Item Category</th>
+                                <th class="border border-black">Pet Category</th>
+                                <th class="border border-black">Action</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <?php
+                                if ($resultFish->num_rows > 0) {
+                                    while($item = $resultFish->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $item['item_id']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['price']; ?></td>
+                                            <td><?php echo $item['discount']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td>
+                                                <?php if (!empty($item['item_image'])): ?>  
+                                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
+                                                <?php else: ?>
+                                                    No Image
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $item['item_category']; ?></td>
+                                            <td><?php echo $item['pet_category']; ?></td>
+                                            
+                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
+                        </tbody>
                     </table>
                 </div>            
             <br><br><br><br>
         </div>
 
-        <!-- FARM-ANIMAL -->
-        <div id="farm" class="hidden content-section">
+        <!-- Farm_animal -->
+        <div id="farm_animal" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Farm Animal Items</h1>
-            <p class="mb-6 text-center">Details about farm animal and related items go here.</p>
+            <p class="mb-6 text-center">Details about Farm Animal and related items go here.</p>
 
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
-                <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-6">
-                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
-                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
-                        Search
-                    </button>
-                </div>
-
-                <p class="mb-4 text-lg font-bold text-center">Add Farm-Animal Items</p>
-
-                <!-- Item ID Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
-                </div>
-
-                <!-- Item Name Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="price">Price:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="price" placeholder="0000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-                    <input class="w-full px-3 py-2 text-gray-700" type="file" name="itemimage" accept="image/*" onchange="previewImage(event)"/>
-                    <img id="preview" src="#" alt="Image preview" class="hidden max-w-xs mx-auto mt-4"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="pet_category" placeholder="Pet Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="item_category">Item Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="item_category" placeholder="Item Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="description">Description:</label>
-                    <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex items-center justify-between">
-                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
-                        Add Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
-                        Update Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
-                        Delete Item
-                    </button>
-                </div>
-            </form>
-            <br>
-            <br>
-                <div class="mt-8">
+            <div class="mt-1">
                     <h3 class="text-xl font-bold ">View all items</h3>
-                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                    <table class="w-full mt-4 border border-collapse border-black table-auto ">
                         <thead class="bg-gray-200">
                             <tr>
                                 <th class="border border-black">Item ID</th>
@@ -875,8 +931,40 @@ $conn->close();
                                 <th class="border border-black">Quantity</th>
                                 <th class="border border-black">Item Image</th>
                                 <th class="border border-black">Item Category</th>
+                                <th class="border border-black">Pet Category</th>
+                                <th class="border border-black">Action</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <?php
+                                if ($resultFA->num_rows > 0) {
+                                    while($item = $resultFA->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $item['item_id']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['price']; ?></td>
+                                            <td><?php echo $item['discount']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td>
+                                                <?php if (!empty($item['item_image'])): ?>  
+                                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
+                                                <?php else: ?>
+                                                    No Image
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $item['item_category']; ?></td>
+                                            <td><?php echo $item['pet_category']; ?></td>
+                                            
+                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
+                        </tbody>
                     </table>
                 </div>            
             <br><br><br><br>
@@ -885,109 +973,11 @@ $conn->close();
         <!-- HORSE -->
         <div id="horse" class="hidden content-section">
             <h1 class="mb-4 text-2xl font-bold text-center">Horse Items</h1>
-            <p class="mb-6 text-center">Details about horse and related items go here.</p>
-            
-            <form class="max-w-3xl px-8 pt-6 pb-8 mx-auto mb-4 bg-white rounded shadow-md" action="" method="post" enctype="multipart/form-data">
-                <!-- Search Bar -->
-                <div class="flex items-center justify-between mb-6">
-                    <input class="w-3/4 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" placeholder="Search for items..."name="search"/>
-                    <button class="px-4 py-2 ml-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline" type="submit"name="searchitem">
-                        Search
-                    </button>
-                </div>
+            <p class="mb-6 text-center">Details about Horse and related items go here.</p>
 
-                <p class="mb-4 text-lg font-bold text-center">Add Hourse Items</p>
-
-                <!-- Item ID Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemid">Item ID:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemid" placeholder="Item ID" readonly/>
-                </div>
-
-                <!-- Item Name Field -->
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemname">Item Name:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="itemname" placeholder="Item Name"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="price">Price:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="price" placeholder="0000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="discount">Discount:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"  type="text"  name="discount" placeholder="00000.00/="/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="quantity">Quantity:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="quantity" placeholder="Quantity"/>
-                </div>
-
-                <div class="mb-4">
-    <label class="block mb-2 text-sm font-bold text-gray-700" for="itemimage">Item Image:</label>
-    <input
-        class="w-full px-3 py-2 text-gray-700"
-        type="file"
-        name="itemimage"
-        accept="image/*"
-        onchange="previewImage(event)"
-    />
-    <span id="file-label" class="text-sm text-gray-500">No file chosen</span>
-    <!-- Image preview -->
-    <img
-        id="preview"
-        src="#"
-        alt="Image preview"
-        class="hidden max-w-xs mx-auto mt-4 border border-gray-300 rounded shadow"
-    />
-    <!-- Remove Button -->
-    <button
-        id="remove-button"
-        onclick="removeImage()"
-        type="button"
-        class="hidden px-4 py-2 mt-2 text-sm text-white bg-red-500 rounded shadow hover:bg-red-600"
-    >
-        Remove Image
-    </button>
-</div>
-
-
-               
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="pet_category">Pet Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="pet_category" placeholder="Pet Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="item_category">Item Category:</label>
-                    <input class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" type="text" name="item_category" placeholder="Item Category"/>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 text-sm font-bold text-gray-700" for="description">Description:</label>
-                    <textarea class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline" name="description" id="description" rows="5" placeholder="Enter item description here"></textarea>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex items-center justify-between">
-                    <button class="px-4 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700 focus:outline-none focus:shadow-outline" type="submit" name="additem">
-                        Add Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-yellow-500 rounded hover:bg-yellow-700 focus:outline-none focus:shadow-outline" type="submit" name="updateitem">
-                        Update Item
-                    </button>
-                    <button class="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700 focus:outline-none focus:shadow-outline" type="submit" name="deleteitem">
-                        Delete Item
-                    </button>
-                </div>
-            </form>
-            <br>
-            <br>
-                <div class="mt-8">
+            <div class="mt-1">
                     <h3 class="text-xl font-bold ">View all items</h3>
-                    <table class="w-full mt-4 border border-collapse border-black table-auto">
+                    <table class="w-full mt-4 border border-collapse border-black table-auto ">
                         <thead class="bg-gray-200">
                             <tr>
                                 <th class="border border-black">Item ID</th>
@@ -997,8 +987,40 @@ $conn->close();
                                 <th class="border border-black">Quantity</th>
                                 <th class="border border-black">Item Image</th>
                                 <th class="border border-black">Item Category</th>
+                                <th class="border border-black">Pet Category</th>
+                                <th class="border border-black">Action</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <?php
+                                if ($resultHorse->num_rows > 0) {
+                                    while($item = $resultHorse->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $item['item_id']; ?></td>
+                                            <td><?php echo $item['item_name']; ?></td>
+                                            <td><?php echo $item['price']; ?></td>
+                                            <td><?php echo $item['discount']; ?></td>
+                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td>
+                                                <?php if (!empty($item['item_image'])): ?>  
+                                                    <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
+                                                <?php else: ?>
+                                                    No Image
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $item['item_category']; ?></td>
+                                            <td><?php echo $item['pet_category']; ?></td>
+                                            
+                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
+                        </tbody>
                     </table>
                 </div>            
             <br><br><br><br>
@@ -1006,6 +1028,20 @@ $conn->close();
         
     </div>
 </div>
+
+
+        <!-- Larger Item Modal -->
+    <div id="itemModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-800 bg-opacity-50">
+        <div class="relative w-full max-w-lg mx-auto mt-20 bg-white rounded-lg shadow-lg">
+            <button class="absolute text-gray-600 top-2 right-2 hover:text-red-900" onclick="closeModal()">✖</button>
+            <img id="item_image" src="" alt="Modal Image" class="w-full h-48 rounded-t-lg"> 
+            <div class="p-6">
+                <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                <p id="modalCategory" class="mt-2 text-gray-600"></p>
+                <p id="modalPrice" class="mt-4 text-xl font-semibold text-gray-800"></p>
+            </div>
+        </div>
+    </div>    
 
 <script>
     const sidebar = document.getElementById('sidebar');
@@ -1037,41 +1073,27 @@ $conn->close();
         backButton.classList.add('hidden');
     }
 
+        // Function to open the item in larger display
+        function openModal(title, category, price, image) {
+            // Update modal with item details
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalCategory').textContent = `Category: ${category}`;
+            document.getElementById('modalPrice').textContent = `Price: $${price}`;
+            document.getElementById('item_image').src = 'data:image/jpeg;base64,' + image;  // Set the image in the modal
+            document.getElementById('itemModal').classList.remove('hidden'); // Show the modal
+        }
 
-   // Function to preview the selected image
-function previewImage(event) {
-    const preview = document.getElementById('preview'); // Image preview element
-    const removeButton = document.getElementById('remove-button'); // Remove button
-    const fileLabel = document.getElementById('file-label'); // Label for the file name
-    const fileInput = event.target; // File input element
-    const file = fileInput.files[0]; // Get the selected file
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('itemModal').classList.add('hidden'); // Hide the modal
+        }
 
-    if (file) {
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            preview.src = e.target.result; // Display the image in the preview
-            preview.classList.remove('hidden'); // Show the preview image
-            removeButton.classList.remove('hidden'); // Show the remove button
-            fileLabel.textContent = file.name; // Display the file name
-        };
-
-        reader.readAsDataURL(file); // Read the file as a Data URL
-    }
-}
-
-function previewImage(event) {
-    var reader = new FileReader();
-    reader.onload = function () {
-        var img = document.getElementById("preview");
-        img.src = reader.result;
-        img.classList.remove("hidden"); // Make image visible
-    };
-    reader.readAsDataURL(event.target.files[0]);
-}
-
-
-
+        function cofirmupdate(){
+            return confirm("Are you sure you want to update this item?");    
+        }
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this item?");
+        }
 
 
     

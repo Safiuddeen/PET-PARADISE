@@ -127,8 +127,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <!-- Footer -->
             <footer class="mt-6 text-sm text-center text-white">
                 <p>© 2024 Paradise Inc. All rights reserved.</p>
-                <a href="#" class="text-blue-950 hover:underline">Privacy Policy</a> | 
-                <a href="#" class="text-blue-950 hover:underline">Terms of Service</a>
+                <a href="terms_policy.php" class="text-blue-950 hover:underline">Privacy Policy</a> | 
+                <a href="terms_policy.php" class="text-blue-950 hover:underline">Terms of Service</a>
             </footer>
         </form>
     </div>

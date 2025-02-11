@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 include("connection.php");
@@ -187,6 +188,7 @@ $conn->close();
         <?php if (!empty($usernameErr) || !empty($passwordErr)): ?>
             <div class="p-2 mb-4 text-red-700 bg-red-100 border border-red-400 rounded">
                 <?php
+                
                 if (!empty($usernameErr)) {
                     echo "<p class='text-sm'>$usernameErr</p>";
                 }

@@ -92,14 +92,14 @@
     <!-- main page footer -->
     <footer class="py-4 mt-6 text-sm text-center text-white bg-slate-700">
                     <p>We're here 24/7</p>
-                    <a href="#" class="pr-4 text-white hover:underline">1-800-672-4399 </a> Or 
-                    <a href="#" class="pl-4 text-white hover:underline">Email Us</a>
+                    <a href="terms_policy.php" class="pr-4 text-white hover:underline">1-800-672-4399 </a> Or 
+                    <a href="terms_policy.php" class="pl-4 text-white hover:underline">Email Us</a>
             </footer>
             <footer class="py-4 text-sm text-center bg-white text-slate-900">
                     <p>Sri Lanka</p>
                     <p>© 2024 Paradise Inc. All rights reserved.</p>
-                    <a href="#" class=" text-blue-950 hover:underline">Privacy Policy</a> | 
-                    <a href="#" class="text-blue-950 hover:underline">Terms of Service</a>
+                    <a href="terms_policy.php" class=" text-blue-950 hover:underline">Privacy Policy</a> | 
+                    <a href="terms_policy.php" class="text-blue-950 hover:underline">Terms of Service</a>
             </footer>
 </body>
 </html>

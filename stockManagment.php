@@ -292,7 +292,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <br><br><br><br>
         </div>
         <!-- ADMIN -->
-<div id="admin" class="flex flex-col items-center hidden min-h-screen content-section">
+<div id="admin" class="flex-col items-center hidden min-h-screen content-section">
     <h1 class="w-full mb-4 text-2xl font-bold text-center">Admin Managing</h1>
 
     <div class="w-full px-4">

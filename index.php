@@ -2,9 +2,21 @@
 include 'connection.php';
 session_start();
 
-if (isset($_SESSION["username"])) {
-    $user=($_SESSION["username"]);
-} 
+// Get the username cookie
+$username = isset($_COOKIE['user']) ? $_COOKIE['user'] : null;
+// Show cookie message only if the user hasn't accepted it
+if ($username && !isset($_COOKIE["cookiesAccepted_$username"])){
+}else{
+
+}
+
+
+if (isset($_SESSION["customer_ID"]) && isset($_SESSION["username"])) {
+    // Extract the first two characters of the username and convert them to uppercase.
+    $user = strtoupper(substr($_SESSION["username"], 0, 2));
+} else {
+    $user = ""; // For example, "GU" for Guest User.
+}
 
 if (isset($_POST['userlogout'])) { 
     session_unset();  
@@ -87,8 +99,8 @@ $result = $conn->query($sql);
                 </div>
             </li>
 
-            <!-- Login Icon or User Initials (Right Side) -->
-            <?php if (!isset($_SESSION["username"])): ?>
+            <!-- Login Icon or User Initials -->
+            <?php if (!isset($_SESSION["customer_ID"]) && !isset($_SESSION["username"])): ?>
                 <!-- Not logged in: display the login icon with dropdown -->
                 <li class="relative ml-8">
                     <button id="loginButton">
@@ -113,12 +125,12 @@ $result = $conn->query($sql);
                 <!-- Logged in: display user initials -->
                 <li class="relative ml-8">
                     <button id="userInitialsButton" class="flex items-center justify-center w-12 h-12 text-white bg-blue-500 rounded-full">
-                        <?php echo strtoupper(substr($user, 0, 2)); ?>
+                        <?php echo $user; ?>
                     </button>
                     <div id="logoutDropdown" class="absolute right-0 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
                         <ul class="p-4 space-y-2">
                             <li>
-                                <button onclick="window.location.href=''" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
+                                <button onclick="window.location.href='userProfile.php'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
                                     User Profile
                                 </button>
                             </li>
@@ -139,24 +151,24 @@ $result = $conn->query($sql);
 
     <!-- Categories Inline -->
 <div class="p-4 bg-gray-200">
-    <div class="container flex justify-center mx-auto space-x-6">
-        <a href="shop.php?category=Food" class="flex flex-col items-center font-bold text-black hover:underline ">
+<div class="container flex justify-center mx-auto space-x-6">
+        <a onclick="redirectToCategory('Food')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
             <img src="image/icons/food.png" alt="Food Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Food</span>
         </a>
-        <a href="shop.php?category=Accessories" class="flex flex-col items-center font-bold text-black hover:underline">
+        <a onclick="redirectToCategory('Accessories')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
             <img src="image/icons/Accessories.png" alt="Accessories Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Accessories</span>
         </a>
-        <a href="shop.php?category=Health" class="flex flex-col items-center font-bold text-black hover:underline">
+        <a onclick="redirectToCategory('Health')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
             <img src="image/icons/Health.png" alt="Health Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Health</span>
         </a>
-        <a href="shop.php?category=Housing" class="flex flex-col items-center font-bold text-black hover:underline">
+        <a onclick="redirectToCategory('Housing')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
             <img src="image/icons/Housing.png" alt="Housing Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Housing</span>
         </a>
-        <a href="shop.php?category=Specialty" class="flex flex-col items-center font-bold text-black hover:underline">
+        <a onclick="redirectToCategory('Specialty')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
             <img src="image/icons/Specialty.png" alt="Specialty Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Specialty</span>
         </a>
@@ -341,14 +353,17 @@ $result = $conn->query($sql);
                         <button class="px-1 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Add to Cart</button>
                     </a>
                     <a id="buyNowLink" href="#">
-                        <button class="px-1 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700">Buy It Now</button>
+                        <button class="px-1 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700">Place order</button>
                     </a>
                 </div>
             </div>
         </div>
     </div>
-
-
+    <!-- cookie notification -->
+    <div id="cookieMessage" class="fixed p-4 text-white bg-gray-800 rounded-lg shadow-lg bottom-4 left-4">
+    <p>We use cookies to enhance your experience. By continuing, you accept our cookies.</p>
+    <button onclick="acceptCookies('<?php echo $username; ?>')" class="px-4 py-2 mt-2 text-white bg-blue-500 rounded">Accept Cookies</button>
+</div>
 
 
 
@@ -476,13 +491,24 @@ $result = $conn->query($sql);
     
     // Update links dynamically
     document.getElementById('cartLink').href = `cart.php?item_id=${itemId}`;
-    document.getElementById('buyNowLink').href = `paymentex.php?item_id=${itemId}`;
+    document.getElementById('buyNowLink').href = `place_order.php?item_id=${itemId}`;
 
     document.getElementById('itemModal').classList.remove('hidden');
     }
 
     function closeModal() {
         document.getElementById('itemModal').classList.add('hidden');
+    }
+
+
+    function redirectToCategory(category) {
+    window.location.href = "shop.php?category=" + category;
+    }
+
+    //script for the acsept cookies
+    function acceptCookies(username) {
+        document.cookie = "cookiesAccepted_" + username + "=true; path=/; max-age=" + (30 * 24 * 60 * 60); 
+        document.getElementById("cookieMessage").style.display = "none"; 
     }
 
 </script>

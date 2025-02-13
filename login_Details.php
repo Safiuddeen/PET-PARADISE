@@ -4,8 +4,19 @@ session_start();
 
 include("connection.php");
 
+if (isset($_POST['user_name']) && !empty($_POST['user_name'])) { 
+    $username = $_POST['user_name']; 
+    
+    setcookie('user', $username, time() + (30 * 24 * 60 * 60), '/'); // Store username cookie for 30 days
+    
+    if (!isset($_COOKIE["cookiesAccepted_$username"])) {   // Check if this user has already accepted cookies
+        setcookie("cookiesAccepted_$username", "true", time() + (30 * 24 * 60 * 60), "/"); // Store consent per user
+    }
+    header("Location: index.php");
+    exit();
+}
 // Initialize error variables
-$fullname = $username =  $email = $gender = $contactnum = $password = "";
+$customerid = $fullname = $username =  $email = $gender = $contactnum = $password = "";
 $fullnameErr = $usernameErr = $emailErr = $genderErr = $contactnumErr = $passwordErr = "";
 
 // Function to sanitize input data
@@ -113,53 +124,84 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
         $password = $_POST["password"];
     }
 
-    // If no errors, check credentials
     if (empty($usernameErr) && empty($passwordErr)) {
-        $found = false; // Flag to check if user is found
-        $stmt = $conn->prepare("SELECT password FROM create_login WHERE user_name = ?");
+        // Check in the create_login table first
+        $stmt = $conn->prepare("SELECT customer_ID, password FROM create_login WHERE user_name = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $stmt->store_result();
+    
+        if ($stmt->num_rows > 0) {
+            // User found in create_login table
+            $stmt->bind_result($customer_ID, $hashed_password); 
+            $stmt->fetch();
+    
+            if (password_verify($password, $hashed_password)) {
+                // Store customer_ID and username in session
+                $_SESSION["customer_ID"] = $customer_ID; 
+                $_SESSION["username"] = $username; 
+                header("Location: index.php"); 
+                exit();
+            } else {
+                $passwordErr = "Incorrect password."; 
+            }
+        }  
+        $stmt->close();  // Close statement outside the if block
+
+        // Check in the manager table
+        $stmt = $conn->prepare("SELECT manger_id, password FROM manager WHERE user_name = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->store_result();
 
         if ($stmt->num_rows > 0) {
-            // User found in create_login table
-            $stmt->bind_result($hashed_password);
+            $stmt->bind_result($manager_ID, $hashed_password);
             $stmt->fetch();
+
             if (password_verify($password, $hashed_password)) {
+                // Store manager ID and username in session
+                $_SESSION["manger_id"] = $manager_ID;
                 $_SESSION["username"] = $username;
-                header("Location: index.php");
+                header("Location: admin2.php");
                 exit();
             } else {
                 $passwordErr = "Incorrect password.";
-                $found = true;
             }
+        }else {
+            $usernameErr = "";
         }
-        $stmt->close();
+        $stmt->close(); 
 
-        // Check in manager table only if not found in create_login
-        if ($found) {
-            $stmt = $conn->prepare("SELECT password FROM manager WHERE user_name = ?");
-            $stmt->bind_param("s", $username);
-            $stmt->execute();
-            $stmt->store_result();
 
-            if ($stmt->num_rows > 0) {
-                $stmt->bind_result($hashed_password);
-                $stmt->fetch();
-                if (password_verify($password, $hashed_password)) {
-                    $_SESSION["username"] = $username;
-                    header("Location: admin2.php");
-                    exit();
-                } else {
-                    $passwordErr = "Incorrect password.";
-                }
+        // Check in the manager table
+        $stmt = $conn->prepare("SELECT admin_id, password FROM admin WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($admin_ID, $hashed_password);
+            $stmt->fetch();
+
+            if (password_verify($password, $hashed_password)) {
+                // Store manager ID and username in session
+                $_SESSION["admin_id"] = $admin_ID;
+                $_SESSION["username"] = $username;
+                header("Location: admin2.php");
+                exit();
             } else {
-                $usernameErr = "User not found.";
+                $passwordErr = "Incorrect password.";
             }
-            $stmt->close();
+        }else {
+            $usernameErr = "";
         }
+        $stmt->close(); 
+    }else {
+        $usernameErr = "User not found.";
     }
+    
 }
+
 $conn->close();
 
 ?>

@@ -107,7 +107,7 @@ $resultFA = $conn->query($queryFA);
                     <button id="loginButton">
                         <img src="image/useradd.png" alt="User" class="w-12 h-12">
                     </button>
-                    <div id="loginDropdown" class="absolute right-0 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
+                    <div id="loginDropdown" class="absolute right-0 z-50 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
                         <ul class="p-4 space-y-2">
                             <li>
                                 <button onclick="window.location.href='login_Details.php?form=login'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
@@ -128,7 +128,7 @@ $resultFA = $conn->query($queryFA);
                     <button id="userInitialsButton" class="flex items-center justify-center w-12 h-12 text-white bg-blue-500 rounded-full">
                         <?php echo strtoupper(substr($user, 0, 2)); ?>
                     </button>
-                    <div id="logoutDropdown" class="absolute right-0 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
+                    <div id="logoutDropdown" class="absolute right-0 z-50 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
                         <ul class="p-4 space-y-2">
                             <li>
                                 <button onclick="window.location.href=''" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
@@ -528,29 +528,29 @@ $resultFA = $conn->query($queryFA);
             </section>
             <?php $conn->close(); ?>
         </div>
-
-        <!-- larger item display  -->
+</div>
+        <!-- Larger Item Display Modal -->
     <div id="itemModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-800 bg-opacity-50">
-            <div class="relative w-full max-w-lg mx-auto mt-20 bg-white rounded-lg shadow-lg">
-                <button class="absolute text-gray-600 top-2 right-2 hover:text-red-900" onclick="closeModal()">✖</button>
-                <img id="modalImage" src="https://via.placeholder.com/150" alt="Modal Image" class="w-full h-48 rounded-t-lg">
-                <div class="p-6">
-                    <h3 id="modalTitle" class="text-2xl font-bold"></h3>
-                    <p id="modalDescription" class="mt-2 text-gray-600"></p>
-                    <p id="modalPrice" class="mt-4 text-xl font-semibold text-gray-800"></p>
-                    <div class="flex justify-around mt-6">
-                        <a href="cart.php">
-                            <button class="px-3 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Add to Cart</button>
-                        </a>
-                        <a href="paymentex.php">
-                            <button class="px-3 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Buy It Now</button>
-                        </a>
-                        
-                    </div>
+        <div class="relative w-full max-w-lg mx-auto mt-20 bg-white rounded-lg shadow-lg">
+            <button class="absolute text-gray-600 top-2 right-2 hover:text-red-900" onclick="closeModal()">✖</button>
+            <img id="modalImage" src="" alt="Modal Image" class="w-3/6 rounded-t-lg h-52">
+            <div class="p-6">
+                <!-- Dynamically Updated Values -->
+                <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                <p id="modalPrice" class="mt-4 text-xl font-semibold text-gray-800"></p>
+                <p id="modalDescription" class="mt-2 text-gray-600"></p>
+
+                <div class="flex justify-around mt-6">
+                    <a id="cartLink" href="#">
+                        <button class="px-1 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Add to Cart</button>
+                    </a>
+                    <a id="buyNowLink" href="#">
+                        <button class="px-1 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700">Place order</button>
+                    </a>
                 </div>
             </div>
         </div>
-    </div>       
+    </div>    
 
 <!-- main page footer -->
 <footer class="py-4 mt-0 text-sm text-center text-white bg-slate-700">
@@ -647,7 +647,7 @@ $resultFA = $conn->query($queryFA);
     
     // Update links dynamically
     document.getElementById('cartLink').href = `cart.php?item_id=${itemId}`;
-    document.getElementById('buyNowLink').href = `paymentex.php?item_id=${itemId}`;
+    document.getElementById('buyNowLink').href = `place_order.php?item_id=${itemId}`;
 
     document.getElementById('itemModal').classList.remove('hidden');
     }

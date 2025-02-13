@@ -1,0 +1,279 @@
+<?php
+include 'connection.php';
+session_start();
+
+if (isset($_SESSION["customer_ID"]) && isset($_SESSION["username"])) {
+    // Extract the first two characters of the username and convert them to uppercase.
+    $user = strtoupper(substr($_SESSION["username"], 0, 2));
+} else {
+    $user = ""; // For example, "GU" for Guest User.
+}
+
+if (isset($_POST['userlogout'])) { 
+    session_unset();  
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+
+$category = isset($_GET['category']) ? $_GET['category'] : ''; // Get category from URL
+
+$sql = "SELECT * FROM item WHERE item_category='$category'"; // Fetch items based on category
+$result = $conn->query($sql);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" type="x-icon" href="image/PARADISE.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Pet-Paradise</title>
+</head>
+<body class="bg-indigo-200 ">
+
+<!-- Navbar -->
+<nav class="flex items-center justify-between w-full p-4 bg-white">
+        <ul class="flex items-center w-full">
+            <!-- Logo -->
+            <li class="mr-4">
+                <a href="index.php">
+                    <img src="image/PARADISE2.png" alt="logo" class="h-20 w-36">
+                </a>
+            </li>
+
+            <!-- Search Bar -->
+            <li class="flex-grow pl-6">
+                <input type="text" placeholder="Search..." name="navsearch" class="w-2/4 px-4 py-2 border-2 border-black rounded-lg focus:outline-none focus:border-blue-500">
+            </li>
+
+            <!-- Message Icon -->
+            <li class="relative ">
+                <button onclick="window.location.href='help.php'">
+                    <img src="image/massege.png" alt="Message" class="w-12 h-12">
+                </button>
+            </li>
+
+            <!-- Cart Icon with Dropdown -->
+            <li class="relative z-50 ml-6">
+                <button id="cartButton">
+                    <img src="image/grocery-store.png" alt="Cart" class="w-12 h-12">
+                </button>
+                <div id="cartDropdown" class="absolute right-0 z-50 hidden bg-white border border-gray-300 rounded-lg shadow-lg w-80">
+                    <ul class="p-4 space-y-2">
+                        <li class="text-sm text-gray-700">
+                            <div class="px-4 text-center">
+                                <h1 class="mb-4 text-2xl font-semibold text-gray-900">Shopping cart</h1>
+                                <p class="mb-2 text-lg text-gray-700">You don't have any items in your cart.</p>
+                                <p class="text-sm text-gray-500">Have an account? | Sign in to see your items.</p>
+                                <div class="flex justify-center gap-4 mt-6">
+                                    <button onclick="window.location.href='login_Details.php?form=login'" class="px-6 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700">
+                                        Sign in
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <!-- Login Icon or User Initials -->
+            <?php if (!isset($_SESSION["customer_ID"]) && !isset($_SESSION["username"])): ?>
+                <!-- Not logged in: display the login icon with dropdown -->
+                <li class="relative ml-8">
+                    <button id="loginButton">
+                        <img src="image/useradd.png" alt="User" class="w-12 h-12">
+                    </button>
+                    <div id="loginDropdown" class="absolute right-0 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
+                        <ul class="p-4 space-y-2">
+                            <li>
+                                <button onclick="window.location.href='login_Details.php?form=login'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
+                                    Sign in
+                                </button>
+                            </li>
+                            <li>
+                                <button onclick="window.location.href='login_Details.php?form=create'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
+                                    Create an Account
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            <?php else: ?>
+                <!-- Logged in: display user initials -->
+                <li class="relative ml-8">
+                    <button id="userInitialsButton" class="flex items-center justify-center w-12 h-12 text-white bg-blue-500 rounded-full">
+                        <?php echo $user; ?>
+                    </button>
+                    <div id="logoutDropdown" class="absolute right-0 hidden w-48 bg-white border border-gray-300 rounded-lg shadow-lg">
+                        <ul class="p-4 space-y-2">
+                            <li>
+                                <button onclick="window.location.href='userProfile.php'" class="w-full py-2 mt-2 text-sm font-semibold text-white bg-blue-500 rounded hover:bg-blue-700">
+                                    User Profile
+                                </button>
+                            </li>
+                            <li>
+                                <form action="" method="post">
+                                <button name="userlogout" class="w-full py-2 text-sm font-semibold text-white bg-red-500 rounded hover:bg-red-700">
+                                    Logout
+                                </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+
+<div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-6">
+    <?php if ($result && $result->num_rows > 0): ?> 
+        <?php while ($row = $result->fetch_assoc()): ?> 
+            <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg"
+                onclick="openModal('<?php echo htmlspecialchars($row['item_name'] ?? 'No name'); ?>',
+                '<?php echo htmlspecialchars($row['pet_category'] ?? 'No description available.'); ?>',
+                '<?php echo htmlspecialchars($row['price'] ?? 'No price available.'); ?>',
+                '<?php echo !empty($row['item_image']) ? 'data:image/jpeg;base64,' . base64_encode($row['item_image']) :''; ?>',
+                '<?php echo $row['item_id']; ?>')">
+
+                <?php if (!empty($row['item_image'])): ?>
+                    <img src="<?php echo 'data:image/jpeg;base64,' . base64_encode($row['item_image']); ?>" 
+                         alt="<?php echo htmlspecialchars($row['item_name'] ?? 'Item'); ?>" 
+                         class="object-cover w-full h-48 mb-4 rounded-md">
+                <?php endif; ?>    
+
+                <div class="mt-4">
+                    <h2 class="mb-2 text-lg font-semibold"><?php echo htmlspecialchars($row['item_name'] ?? 'No name'); ?></h2>
+                    <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['price'] ?? 'No price available.'); ?></p>
+                    <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['discount'] ?? 'No discount available.'); ?></p>
+                    <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['original_price'] ?? 'No price available.'); ?></p>
+                    <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['pet_category'] ?? 'No description available.'); ?></p>
+                </div>
+            </div>      
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p class="text-center text-gray-500 col-span-full">No items found.</p>
+    <?php endif; ?>
+</div>
+
+<?php $conn->close(); ?>
+
+</body>
+<script>
+      const cartButton = document.getElementById('cartButton');
+        const cartDropdown = document.getElementById('cartDropdown');
+        cartButton.addEventListener('click', () => {
+            cartDropdown.classList.toggle('hidden');
+        });
+        window.addEventListener('click', (e) => {
+            if (!cartButton.contains(e.target) && !cartDropdown.contains(e.target)) {
+                cartDropdown.classList.add('hidden');
+            }
+        });
+
+        // Toggle Login Dropdown (for non-logged-in users)
+        const loginButton = document.getElementById('loginButton');
+        const loginDropdown = document.getElementById('loginDropdown');
+        if(loginButton) {
+            loginButton.addEventListener('click', () => {
+                loginDropdown.classList.toggle('hidden');
+            });
+            window.addEventListener('click', (e) => {
+                if (!loginButton.contains(e.target) && !loginDropdown.contains(e.target)) {
+                    loginDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Toggle Logout Dropdown (for logged-in users)
+        const userInitialsButton = document.getElementById('userInitialsButton');
+        const logoutDropdown = document.getElementById('logoutDropdown');
+        if(userInitialsButton) {
+            userInitialsButton.addEventListener('click', () => {
+                logoutDropdown.classList.toggle('hidden');
+            });
+            window.addEventListener('click', (e) => {
+                if (!userInitialsButton.contains(e.target) && !logoutDropdown.contains(e.target)) {
+                    logoutDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+    //image slidings script
+    const slides = document.querySelectorAll('#slider li');
+    const dots = document.querySelectorAll('#dots .dot');
+    let currentIndex = 0;
+    let slideInterval;
+
+    const showSlide = (index) => {
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('hidden', i !== index);
+        });
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('bg-gray-400', i !== index);
+            dot.classList.toggle('bg-gray-700', i === index);
+        });
+    };
+
+    const nextSlide = () => {
+        currentIndex = (currentIndex + 1) % slides.length;
+        showSlide(currentIndex);
+    };
+
+    const prevSlide = () => {
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        showSlide(currentIndex);
+    };
+
+    const startAutoSlide = () => {
+        slideInterval = setInterval(nextSlide, 3000);
+    };
+
+    const stopAutoSlide = () => {
+        clearInterval(slideInterval);
+    };
+
+    document.getElementById('next').addEventListener('click', () => {
+        stopAutoSlide();
+        nextSlide();
+        startAutoSlide();
+    });
+
+    document.getElementById('prev').addEventListener('click', () => {
+        stopAutoSlide();
+        prevSlide();
+        startAutoSlide();
+    });
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            stopAutoSlide();
+            currentIndex = index;
+            showSlide(currentIndex);
+            startAutoSlide();
+        });
+    });
+
+    showSlide(currentIndex);
+    startAutoSlide();
+
+
+    function openModal(title, description, price, imageSrc, itemId) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalDescription').textContent = "Description: " + description;
+    document.getElementById('modalPrice').textContent = `Price: Rs.${price}`;
+    document.getElementById('modalImage').src = imageSrc;
+    
+    // Update links dynamically
+    document.getElementById('cartLink').href = `cart.php?item_id=${itemId}`;
+    document.getElementById('buyNowLink').href = `place_order.php?item_id=${itemId}`;
+
+    document.getElementById('itemModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('itemModal').classList.add('hidden');
+    }
+</script>
+</html>

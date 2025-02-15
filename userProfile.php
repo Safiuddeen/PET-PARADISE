@@ -1,5 +1,8 @@
 <?php
-include 'connection.php';
+require_once 'config/connection.php'; //Database connection file
+
+$db = new Database(); // Create Database class
+$conn = $db->getConnection();
 session_start();
 
 // Check if the user is logged in
@@ -8,7 +11,7 @@ if (!isset($_SESSION["customer_ID"])) {
     header("Location: login_Details.php"); // Redirect to login page if not logged in
     exit();
 }else{
-    echo "customer_ID: " . $_SESSION["customer_ID"];
+    
 }
 
 $customer_id = $_SESSION["customer_ID"];
@@ -187,7 +190,7 @@ $conn->close();
         <h1 class="mb-6 text-3xl font-bold text-center text-black">Manage Your Profile</h1>
 
         <!-- Single Form Container -->
-        <form class="w-full p-6 bg-white rounded-lg shadow-lg md:flex">
+        <form class="w-full p-6 bg-white rounded-lg shadow-lg md:flex" method="POST">
             
             <!-- Left Column -->
             <div class="w-full p-3 md:w-1/2">

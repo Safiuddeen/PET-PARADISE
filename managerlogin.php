@@ -1,7 +1,10 @@
 <?php
-session_start(); // Start the session at the very beginning
-include 'connection.php';
+require_once 'config/connection.php'; //Database connection file
 
+$db = new Database(); // Create Database class
+$conn = $db->getConnection();
+
+session_start(); // Start the session at the very beginning
 // Initialize error messages
 $usernameErr = $passwordErr = "";
 

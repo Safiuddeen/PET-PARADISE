@@ -1,5 +1,9 @@
 <?php
-include 'connection.php';
+require_once 'config/connection.php'; //Database connection file
+
+$db = new Database(); // Create Database class
+$conn = $db->getConnection();
+
 session_start();
 
 if (isset($_SESSION["username"])) {
@@ -18,11 +22,11 @@ $queryBird = "SELECT * FROM item WHERE pet_category = 'Bird'";
 $resultBird = $conn->query($queryBird);
 
 // Fetch items for the Dog category
-$queryDog = "SELECT * FROM item WHERE pet_category = 'Dogs'";
+$queryDog = "SELECT * FROM item WHERE pet_category = 'Dog'";
 $resultDog = $conn->query($queryDog);
 
 // Fetch items for the Dog category
-$queryCat = "SELECT * FROM item WHERE pet_category = 'Cats'";
+$queryCat = "SELECT * FROM item WHERE pet_category = 'Cat'";
 $resultCat = $conn->query($queryCat);
 
 // Fetch items for the Dog category
@@ -544,7 +548,7 @@ $resultFA = $conn->query($queryFA);
                     <a id="cartLink" href="#">
                         <button class="px-1 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Add to Cart</button>
                     </a>
-                    <a id="buyNowLink" href="#">
+                    <a id="buyNowLink" href="place_order.php">
                         <button class="px-1 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700">Place order</button>
                     </a>
                 </div>

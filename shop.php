@@ -1,5 +1,8 @@
 <?php
-include 'connection.php';
+require_once 'config/connection.php'; // Include the Database connection file
+
+$db = new Database(); // Create an instance of the Database class
+$conn = $db->getConnection();
 session_start();
 
 if (isset($_SESSION["customer_ID"]) && isset($_SESSION["username"])) {
@@ -33,8 +36,8 @@ $result = $conn->query($sql);
 </head>
 <body class="bg-indigo-200 ">
 
-<!-- Navbar -->
-<nav class="flex items-center justify-between w-full p-4 bg-white">
+    <!-- Navbar -->
+    <nav class="flex items-center justify-between w-full p-4 bg-white">
         <ul class="flex items-center w-full">
             <!-- Logo -->
             <li class="mr-4">
@@ -127,37 +130,68 @@ $result = $conn->query($sql);
         </ul>
     </nav>
 
-<div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-6">
-    <?php if ($result && $result->num_rows > 0): ?> 
-        <?php while ($row = $result->fetch_assoc()): ?> 
-            <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg"
-                onclick="openModal('<?php echo htmlspecialchars($row['item_name'] ?? 'No name'); ?>',
-                '<?php echo htmlspecialchars($row['pet_category'] ?? 'No description available.'); ?>',
-                '<?php echo htmlspecialchars($row['price'] ?? 'No price available.'); ?>',
-                '<?php echo !empty($row['item_image']) ? 'data:image/jpeg;base64,' . base64_encode($row['item_image']) :''; ?>',
+   <!-- item cards -->
+   <div class="grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-6">
+        <?php if ($result && $result->num_rows > 0): ?>
+        <?php while ($row = $result->fetch_assoc()): ?>
+        
+        <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg"
+            onclick="openModal('<?php echo htmlspecialchars($row['item_name'] ?? 'No name'); ?>',
+                '<?php echo htmlspecialchars($row['pet_category'] ?? 'category not available.'); ?>',
+                '<?php echo htmlspecialchars($row['item_category'] ?? 'category not available.'); ?>',
+                '<?php echo htmlspecialchars($row['original_price'] ?? 'No price available.'); ?>',
+                '<?php echo htmlspecialchars($row['discount'] ?? 'No discount available.'); ?>',
+                '<?php echo htmlspecialchars($row['description'] ?? 'No description available.'); ?>',
+                '<?php echo !empty($row['item_image']) ? 'data:image/jpeg;base64,' . base64_encode($row['item_image']) : ''; ?>',
                 '<?php echo $row['item_id']; ?>')">
+            
+            <!-- Display image if available -->
+            <?php if (!empty($row['item_image'])): ?>
+                <!-- Image Section -->
+                <img src="<?php echo 'data:image/jpeg;base64,' . base64_encode($row['item_image']); ?>" alt="<?php echo htmlspecialchars($row['item_name'] ?? 'Item'); ?>" class="object-cover w-full h-48 mb-4 rounded-md">
+            <?php endif; ?>    
+            <!-- Additional Fields -->
+            <div class="mt-4">
+                <h2 class="mb-2 text-lg font-semibold"><?php echo htmlspecialchars($row['item_name'] ?? 'No name'); ?></h2>
+                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['original_price'] ?? 'No price available.'); ?></p>
+                <p class="text-sm text-gray-600 uppercase"><?php echo htmlspecialchars($row['price'] ?? 'No price available.'); ?></p>
+                <p class="text-sm text-red-600"><?php echo htmlspecialchars($row['discount'] ?? 'No discount available.'); ?></p>
+                
+                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['pet_category'] ?? 'petCategory not available.'); ?> | <?php echo htmlspecialchars($row['item_category'] ?? 'item category not available.'); ?></p>
+            </div>
+        </div>      
+            <?php endwhile; ?>
+            <?php else: ?>
+            <p class="text-center text-gray-500 col-span-full">No items found.</p>
+            <?php endif; ?>
+            <?php $conn->close(); ?>
+    </div>
 
-                <?php if (!empty($row['item_image'])): ?>
-                    <img src="<?php echo 'data:image/jpeg;base64,' . base64_encode($row['item_image']); ?>" 
-                         alt="<?php echo htmlspecialchars($row['item_name'] ?? 'Item'); ?>" 
-                         class="object-cover w-full h-48 mb-4 rounded-md">
-                <?php endif; ?>    
+    <!-- Larger Item Display Modal -->
+    <div id="itemModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-800 bg-opacity-50 ">
+        <div class="relative w-full max-w-lg mx-auto mt-20 mb-20 bg-white rounded-lg shadow-lg">
+            <button class="absolute text-gray-600 top-2 right-2 hover:text-red-900" onclick="closeModal()">✖</button>
+            <img id="modalImage" src="" alt="Modal Image" class="block w-3/6 mx-auto rounded-t-lg h-52">
+            <div class="p-6">
+                <!-- Dynamically Updated Values -->
+                <h3 id="modalName" class="text-2xl font-bold"></h3>
+                <p id="modalOriginalPrice" class="mt-4 text-xl font-semibold text-gray-800"></p>
+                <p id="modalDiscount" class="mt-4 text-xl text-red-800"></p>
+                <p id="modalPetcategory" class="mt-2 text-gray-800"></p>
+                <p id="modalItemcategory" class="mt-2 text-gray-800"></p>
+                <p id="modalDescription" class="mt-2 text-gray-600"></p>
 
-                <div class="mt-4">
-                    <h2 class="mb-2 text-lg font-semibold"><?php echo htmlspecialchars($row['item_name'] ?? 'No name'); ?></h2>
-                    <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['price'] ?? 'No price available.'); ?></p>
-                    <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['discount'] ?? 'No discount available.'); ?></p>
-                    <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['original_price'] ?? 'No price available.'); ?></p>
-                    <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['pet_category'] ?? 'No description available.'); ?></p>
+                <div class="flex justify-around mt-6">
+                    <a id="cartLink" href="#">
+                        <button class="px-1 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">Add to Cart</button>
+                    </a>
+                    <a id="buyNowLink" href="place_order.php">
+                        <button class="px-1 py-2 font-bold text-white bg-green-500 rounded hover:bg-green-700">Place order</button>
+                    </a>
                 </div>
-            </div>      
-        <?php endwhile; ?>
-    <?php else: ?>
-        <p class="text-center text-gray-500 col-span-full">No items found.</p>
-    <?php endif; ?>
-</div>
-
-<?php $conn->close(); ?>
+            </div>
+        </div>
+    </div>
 
 </body>
 <script>
@@ -259,21 +293,28 @@ $result = $conn->query($sql);
     startAutoSlide();
 
 
-    function openModal(title, description, price, imageSrc, itemId) {
-    document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalDescription').textContent = "Description: " + description;
-    document.getElementById('modalPrice').textContent = `Price: Rs.${price}`;
-    document.getElementById('modalImage').src = imageSrc;
-    
-    // Update links dynamically
-    document.getElementById('cartLink').href = `cart.php?item_id=${itemId}`;
-    document.getElementById('buyNowLink').href = `place_order.php?item_id=${itemId}`;
+    function openModal(name, petCategory, itemCategory, originalPrice, discount, description, imageSrc, itemId) {
+        document.getElementById('modalName').textContent = name;
+        document.getElementById('modalPetcategory').textContent = "Pet Category: " + petCategory;
+        document.getElementById('modalItemcategory').textContent = "Item Category: " + itemCategory;
+        document.getElementById('modalOriginalPrice').textContent = `Price: Rs.${originalPrice}`;
+        document.getElementById('modalDiscount').textContent = `Discount: Rs.${discount}`;
+        document.getElementById('modalDescription').textContent = "Description: " + description;
 
-    document.getElementById('itemModal').classList.remove('hidden');
+        // Set the image if available, else use a placeholder
+        document.getElementById('modalImage').src = imageSrc || 'placeholder.jpg';
+
+        // Update cart & buy now links dynamically
+        document.getElementById('cartLink').href = `cart.php?item_id=${itemId}`;
+        document.getElementById('buyNowLink').href = `place_order.php?item_id=${itemId}`;
+
+        // Show the modal
+        document.getElementById('itemModal').classList.remove('hidden');
     }
 
     function closeModal() {
         document.getElementById('itemModal').classList.add('hidden');
     }
+
 </script>
 </html>

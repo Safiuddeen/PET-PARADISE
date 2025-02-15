@@ -1,6 +1,11 @@
 <?php
 session_start();
-include("connection.php");
+
+require_once 'config/connection.php'; //Database connection file
+
+$db = new Database(); // Create Database class
+$conn = $db->getConnection();
+
 
 // Check if the user is logged in
 if (isset($_SESSION["username"])) {
@@ -310,6 +315,9 @@ $resultFish = $conn->query($sqlFish);
 $sqlHorse = "SELECT * FROM item WHERE pet_category='Horse'";
 $resultHorse = $conn->query($sqlHorse);
 
+$sqlorders = "SELECT * FROM orders";
+$resultorders = $conn->query($sqlorders);
+
 $conn->close();
 ?>
 
@@ -323,6 +331,8 @@ $conn->close();
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-gray-100">
     
@@ -421,9 +431,13 @@ $conn->close();
             <div id="welcome" class="content-section">
                 <h1 class="text-3xl font-bold text-center">Welcome to Admin Dashboard</h1>
                 <h2 class="mt-4 text-2xl text-center">PetParadise</h2>
-                <p class="mt-6 text-lg text-center">
-                    
+                <p class="mt-6 text-lg text-center">   
                 </p>
+                <div class="flex justify-end">
+                    <button class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700" id="downloadBtn">
+                        Download pre-order Report
+                    </button>
+                </div>
                 <!-- Pre-Orders Table -->
                 <div class="mt-8">
                     <h3 class="text-xl font-semibold text-center">Pre-Orders</h3>
@@ -431,21 +445,61 @@ $conn->close();
                         <thead class="bg-gray-200">
                             <tr>
                                 <th class="px-4 py-2 border border-gray-300">Order ID</th>
-                                <th class="px-4 py-2 border border-gray-300">Order Image</th>
-                                <th class="px-4 py-2 border border-gray-300">Order Item</th>
-                                <th class="px-4 py-2 border border-gray-300">Required Quantity</th>
-                                <th class="px-4 py-2 border border-gray-300">Available Quantity</th>
-                                <th class="px-4 py-2 border border-gray-300">Customer Address</th>
-                                <th class="px-4 py-2 border border-gray-300">Price</th>
+                                <th class="px-4 py-2 border border-gray-300">Customer ID</th>
+                                <th class="px-4 py-2 border border-gray-300">Item ID</th>
+                                <th class="px-4 py-2 border border-gray-300">Required Quntity</th>
+                                <th class="px-4 py-2 border border-gray-300">Conatact</th>
+                                <th class="px-4 py-2 border border-gray-300">Shipping Address</th>
+                                <th class="px-4 py-2 border border-gray-300">State</th>
+                                <th class="px-4 py-2 border border-gray-300">City</th>
+                                <th class="px-4 py-2 border border-gray-300">Postal Code</th>
+                                <th class="px-4 py-2 border border-gray-300">Order date</th>
                                 <th class="px-4 py-2 border border-gray-300">Payment Status</th>
                                 <th class="px-4 py-2 border border-gray-300">Actions</th>
                             </tr>
-                        </thead>
+                            </thead>
                         <tbody>
-                            
+                            <?php
+                                if ($resultorders->num_rows > 0) {
+                                    while($orders = $resultorders->fetch_assoc()) {
+                                        ?>
+                                        <tr>
+                                            <td class="border border-black"><?php echo $orders['order_id']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['customer_ID']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['item_id']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['required_quantity']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['contact_number']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['shipping_address']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['state']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['city']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['postal_code']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['order_date']; ?></td>
+                                            <td class="border border-black"><?php echo $orders['payment_status']; ?></td>
+                                            
+                                            
+                                            <td class="border border-black">
+                                                <!-- Deliver Order Button -->
+                                                <button class="px-3 py-1 mb-2 mr-2 text-white bg-green-500 rounded hover:bg-green-700" onclick="deliverOrder(<?php echo $orders['order_id']; ?>)">
+                                                    Deliver Order
+                                                </button>
+
+                                                <!-- Cancel Order Button -->
+                                                <button class="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-700" onclick="cancelOrder(<?php echo $orders['order_id']; ?>)">
+                                                    Cancel Order
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='7'>No items found</td></tr>";
+                                }
+                            ?>
                         </tbody>
                     </table>
-                </div>
+                </div>            
+            <br><br><br><br>
+        
 
                 <!-- Order History Table -->
                 <div class="mt-8">
@@ -558,7 +612,7 @@ $conn->close();
                         <option value="" >Select Item Category</option>
                         <option value="Food" <?php if($item_category == "Food") echo "selected"; ?>>Food</option>
                         <option value="Accessories" <?php if($item_category == "Accessories") echo "selected"; ?>>Accessories</option>
-                        <option value="Health & Wellness" <?php if($item_category == "Health & Wellness") echo "selected"; ?>>Health & Wellness</option>
+                        <option value="Health and Wellness" <?php if($item_category == "Health and Wellness") echo "selected"; ?>>Health & Wellness</option>
                         <option value="Housing" <?php if($item_category == "Housing") echo "selected"; ?>>Housing</option>
                         <option value="Specialty Items" <?php if($item_category == "Specialty Items") echo "selected"; ?>>Specialty Items</option>
                     </select>
@@ -604,23 +658,23 @@ $conn->close();
                                     while($item = $result->fetch_assoc()) {
                                         ?>
                                         <tr>
-                                            <td><?php echo $item['item_id']; ?></td>
-                                            <td><?php echo $item['item_name']; ?></td>
-                                            <td><?php echo $item['price']; ?></td>
-                                            <td><?php echo $item['discount']; ?></td>
-                                            <td><?php echo $item['quantity']; ?></td>
-                                            <td>
+                                            <td class="border border-black"><?php echo $item['item_id']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_name']; ?></td>
+                                            <td class="border border-black"><?php echo $item['price']; ?></td>
+                                            <td class="border border-black"><?php echo $item['discount']; ?></td>
+                                            <td class="border border-black"><?php echo $item['quantity']; ?></td>
+                                            <td class="border border-black">
                                                 <?php if (!empty($item['item_image'])): ?>  
                                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
                                                 <?php else: ?>
                                                     No Image
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo $item['item_category']; ?></td>
-                                            <td><?php echo $item['pet_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['pet_category']; ?></td>
                                             
                                             
-                                            <td><Button class="px-1 py-2 text-white rounded bg-cyan-500 hover:bg-cyan-800"  onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</Button></td>
+                                            <td class="border border-black"><Button class="px-1 py-2 text-white rounded bg-cyan-500 hover:bg-cyan-800"  onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</Button></td>
                                         </tr>
                                         <?php
                                     }
@@ -662,22 +716,22 @@ $conn->close();
                                     while($item = $resultDog->fetch_assoc()) {
                                         ?>
                                         <tr>
-                                            <td><?php echo $item['item_id']; ?></td>
-                                            <td><?php echo $item['item_name']; ?></td>
-                                            <td><?php echo $item['price']; ?></td>
-                                            <td><?php echo $item['discount']; ?></td>
-                                            <td><?php echo $item['quantity']; ?></td>
-                                            <td>
+                                            <td class="border border-black"><?php echo $item['item_id']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_name']; ?></td>
+                                            <td class="border border-black"><?php echo $item['price']; ?></td>
+                                            <td class="border border-black"><?php echo $item['discount']; ?></td>
+                                            <td class="border border-black"><?php echo $item['quantity']; ?></td>
+                                            <td class="border border-black">
                                                 <?php if (!empty($item['item_image'])): ?>  
                                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
                                                 <?php else: ?>
                                                     No Image
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo $item['item_category']; ?></td>
-                                            <td><?php echo $item['pet_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['pet_category']; ?></td>
                                             
-                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                            <td class="border border-black"><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
                                         </tr>
                                         <?php
                                     }
@@ -718,11 +772,11 @@ $conn->close();
                                     while($item = $resultCat->fetch_assoc()) {
                                         ?>
                                         <tr>
-                                            <td><?php echo $item['item_id']; ?></td>
-                                            <td><?php echo $item['item_name']; ?></td>
-                                            <td><?php echo $item['price']; ?></td>
-                                            <td><?php echo $item['discount']; ?></td>
-                                            <td><?php echo $item['quantity']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_id']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_name']; ?></td>
+                                            <td class="border border-black"><?php echo $item['price']; ?></td>
+                                            <td class="border border-black"><?php echo $item['discount']; ?></td>
+                                            <td class="border border-black"><?php echo $item['quantity']; ?></td>
                                             <td>
                                                 <?php if (!empty($item['item_image'])): ?>  
                                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
@@ -730,10 +784,10 @@ $conn->close();
                                                     No Image
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo $item['item_category']; ?></td>
-                                            <td><?php echo $item['pet_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['pet_category']; ?></td>
                                             
-                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                            <td class="border border-black"><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
                                         </tr>
                                         <?php
                                     }
@@ -773,22 +827,22 @@ $conn->close();
                                     while($item = $resultBird->fetch_assoc()) {
                                         ?>
                                         <tr>
-                                            <td><?php echo $item['item_id']; ?></td>
-                                            <td><?php echo $item['item_name']; ?></td>
-                                            <td><?php echo $item['price']; ?></td>
-                                            <td><?php echo $item['discount']; ?></td>
-                                            <td><?php echo $item['quantity']; ?></td>
-                                            <td>
+                                            <td class="border border-black"><?php echo $item['item_id']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_name']; ?></td>
+                                            <td class="border border-black"><?php echo $item['price']; ?></td>
+                                            <td class="border border-black"><?php echo $item['discount']; ?></td>
+                                            <td class="border border-black"><?php echo $item['quantity']; ?></td>
+                                            <td class="border border-black">
                                                 <?php if (!empty($item['item_image'])): ?>  
                                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
                                                 <?php else: ?>
                                                     No Image
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo $item['item_category']; ?></td>
-                                            <td><?php echo $item['pet_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['pet_category']; ?></td>
                                             
-                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                            <td class="border border-black"><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
                                         </tr>
                                         <?php
                                     }
@@ -829,22 +883,22 @@ $conn->close();
                                     while($item = $resultRabbit->fetch_assoc()) {
                                         ?>
                                         <tr>
-                                            <td><?php echo $item['item_id']; ?></td>
-                                            <td><?php echo $item['item_name']; ?></td>
-                                            <td><?php echo $item['price']; ?></td>
-                                            <td><?php echo $item['discount']; ?></td>
-                                            <td><?php echo $item['quantity']; ?></td>
-                                            <td>
+                                            <td class="border border-black"><?php echo $item['item_id']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_name']; ?></td>
+                                            <td class="border border-black"><?php echo $item['price']; ?></td>
+                                            <td class="border border-black"><?php echo $item['discount']; ?></td>
+                                            <td class="border border-black"><?php echo $item['quantity']; ?></td>
+                                            <td class="border border-black">
                                                 <?php if (!empty($item['item_image'])): ?>  
                                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
                                                 <?php else: ?>
                                                     No Image
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo $item['item_category']; ?></td>
-                                            <td><?php echo $item['pet_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['pet_category']; ?></td>
                                             
-                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                            <td class="border border-black"><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
                                         </tr>
                                         <?php
                                     }
@@ -941,22 +995,22 @@ $conn->close();
                                     while($item = $resultFA->fetch_assoc()) {
                                         ?>
                                         <tr>
-                                            <td><?php echo $item['item_id']; ?></td>
-                                            <td><?php echo $item['item_name']; ?></td>
-                                            <td><?php echo $item['price']; ?></td>
-                                            <td><?php echo $item['discount']; ?></td>
-                                            <td><?php echo $item['quantity']; ?></td>
-                                            <td>
+                                            <td class="border border-black"><?php echo $item['item_id']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_name']; ?></td>
+                                            <td class="border border-black"><?php echo $item['price']; ?></td>
+                                            <td class="border border-black"><?php echo $item['discount']; ?></td>
+                                            <td class="border border-black"><?php echo $item['quantity']; ?></td>
+                                            <td class="border border-black">
                                                 <?php if (!empty($item['item_image'])): ?>  
                                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
                                                 <?php else: ?>
                                                     No Image
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo $item['item_category']; ?></td>
-                                            <td><?php echo $item['pet_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['pet_category']; ?></td>
                                             
-                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                            <td class="border border-black"><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
                                         </tr>
                                         <?php
                                     }
@@ -997,22 +1051,22 @@ $conn->close();
                                     while($item = $resultHorse->fetch_assoc()) {
                                         ?>
                                         <tr>
-                                            <td><?php echo $item['item_id']; ?></td>
-                                            <td><?php echo $item['item_name']; ?></td>
-                                            <td><?php echo $item['price']; ?></td>
-                                            <td><?php echo $item['discount']; ?></td>
-                                            <td><?php echo $item['quantity']; ?></td>
-                                            <td>
+                                            <td class="border border-black"><?php echo $item['item_id']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_name']; ?></td>
+                                            <td class="border border-black"><?php echo $item['price']; ?></td>
+                                            <td class="border border-black"><?php echo $item['discount']; ?></td>
+                                            <td class="border border-black"><?php echo $item['quantity']; ?></td>
+                                            <td class="border border-black">
                                                 <?php if (!empty($item['item_image'])): ?>  
                                                     <img src="data:image/jpeg;base64,<?php echo base64_encode($item['item_image']); ?>" width="100" />
                                                 <?php else: ?>
                                                     No Image
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?php echo $item['item_category']; ?></td>
-                                            <td><?php echo $item['pet_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['item_category']; ?></td>
+                                            <td class="border border-black"><?php echo $item['pet_category']; ?></td>
                                             
-                                            <td><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
+                                            <td class="border border-black"><a class="cursor-pointer" onclick="openModal('<?php echo addslashes($item['item_name']); ?>', '<?php echo addslashes($item['item_category']); ?>', '<?php echo $item['price']; ?>', '<?php echo base64_encode($item['item_image']); ?>')">View</a></td>
                                         </tr>
                                         <?php
                                     }
@@ -1095,8 +1149,7 @@ $conn->close();
             return confirm("Are you sure you want to delete this item?");
         }
 
-
-    
+        
 </script>
 
 </body>

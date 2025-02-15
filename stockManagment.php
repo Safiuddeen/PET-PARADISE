@@ -1,6 +1,11 @@
 <?php
-include("connection.php");
 session_start();
+require_once 'config/connection.php'; //Database connection file
+
+$db = new Database(); // Create Database class
+$conn = $db->getConnection();
+
+
 
 if (isset($_POST['logout'])) { 
     session_unset();  

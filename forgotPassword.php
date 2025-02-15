@@ -1,5 +1,9 @@
 <?php
-require 'connection.php';
+require_once 'config/connection.php'; //Database connection file
+
+$db = new Database(); // Create Database class
+$conn = $db->getConnection();
+
 $success = $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

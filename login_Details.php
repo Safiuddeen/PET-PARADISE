@@ -1,8 +1,10 @@
 <?php
+require_once 'config/connection.php'; //Database connection file
+
+$db = new Database(); // Create Database class
+$conn = $db->getConnection();
 
 session_start();
-
-include("connection.php");
 
 if (isset($_POST['user_name']) && !empty($_POST['user_name'])) { 
     $username = $_POST['user_name']; 
@@ -173,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
         $stmt->close(); 
 
 
-        // Check in the manager table
+        // Check in the Admin table
         $stmt = $conn->prepare("SELECT admin_id, password FROM admin WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();

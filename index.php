@@ -1,5 +1,9 @@
 <?php
-include 'connection.php';
+require_once 'config/connection.php'; //Database connection file
+
+$db = new Database(); // Create Database class
+$conn = $db->getConnection();
+
 session_start();
 
 // Get the username cookie
@@ -151,7 +155,7 @@ $result = $conn->query($sql);
 
     <!-- Categories Inline -->
 <div class="p-4 bg-gray-200">
-<div class="container flex justify-center mx-auto space-x-6">
+    <div class="container flex justify-center mx-auto space-x-6">
         <a onclick="redirectToCategory('Food')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
             <img src="image/icons/food.png" alt="Food Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Food</span>
@@ -160,7 +164,7 @@ $result = $conn->query($sql);
             <img src="image/icons/Accessories.png" alt="Accessories Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Accessories</span>
         </a>
-        <a onclick="redirectToCategory('Health')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
+        <a onclick="redirectToCategory('Health and Wellness')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
             <img src="image/icons/Health.png" alt="Health Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Health</span>
         </a>
@@ -168,7 +172,7 @@ $result = $conn->query($sql);
             <img src="image/icons/Housing.png" alt="Housing Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Housing</span>
         </a>
-        <a onclick="redirectToCategory('Specialty')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
+        <a onclick="redirectToCategory('Specialty Items')" class="flex flex-col items-center font-bold text-black cursor-pointer hover:underline">
             <img src="image/icons/Specialty.png" alt="Specialty Icon" class="w-12 h-12">
             <span class="mt-2 text-lg font-bold">Specialty</span>
         </a>
@@ -311,23 +315,27 @@ $result = $conn->query($sql);
         
         <div class="p-4 bg-white rounded-lg shadow hover:shadow-lg"
             onclick="openModal('<?php echo htmlspecialchars($row['item_name'] ?? 'No name'); ?>',
-            '<?php echo htmlspecialchars($row['pet_category'] ?? 'No description available.'); ?>',
-            '<?php echo htmlspecialchars($row['price'] ?? 'No price available.'); ?>',
-            '<?php echo !empty($row['item_image']) ? 'data:image/jpeg;base64,' . base64_encode($row['item_image']) :''; ?>',
-            '<?php echo $row['item_id']; ?>')">
+                '<?php echo htmlspecialchars($row['pet_category'] ?? 'category not available.'); ?>',
+                '<?php echo htmlspecialchars($row['item_category'] ?? 'category not available.'); ?>',
+                '<?php echo htmlspecialchars($row['original_price'] ?? 'No price available.'); ?>',
+                '<?php echo htmlspecialchars($row['discount'] ?? 'No discount available.'); ?>',
+                '<?php echo htmlspecialchars($row['description'] ?? 'No description available.'); ?>',
+                '<?php echo !empty($row['item_image']) ? 'data:image/jpeg;base64,' . base64_encode($row['item_image']) : ''; ?>',
+                '<?php echo $row['item_id']; ?>')">
             
             <!-- Display image if available -->
             <?php if (!empty($row['item_image'])): ?>
-            <!-- Image Section -->
-            <img src="<?php echo 'data:image/jpeg;base64,' . base64_encode($row['item_image']); ?>" alt="<?php echo htmlspecialchars($row['item_name'] ?? 'Item'); ?>" class="object-cover w-full h-48 mb-4 rounded-md">
+                <!-- Image Section -->
+                <img src="<?php echo 'data:image/jpeg;base64,' . base64_encode($row['item_image']); ?>" alt="<?php echo htmlspecialchars($row['item_name'] ?? 'Item'); ?>" class="object-cover w-full h-48 mb-4 rounded-md">
             <?php endif; ?>    
             <!-- Additional Fields -->
             <div class="mt-4">
                 <h2 class="mb-2 text-lg font-semibold"><?php echo htmlspecialchars($row['item_name'] ?? 'No name'); ?></h2>
-                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['price'] ?? 'No price available.'); ?></p>
-                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['discount'] ?? 'No discount available.'); ?></p>
                 <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['original_price'] ?? 'No price available.'); ?></p>
-                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['pet_category'] ?? 'No description available.'); ?></p>
+                <p class="text-sm text-gray-600 uppercase"><?php echo htmlspecialchars($row['price'] ?? 'No price available.'); ?></p>
+                <p class="text-sm text-red-600"><?php echo htmlspecialchars($row['discount'] ?? 'No discount available.'); ?></p>
+                
+                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($row['pet_category'] ?? 'petCategory not available.'); ?> | <?php echo htmlspecialchars($row['item_category'] ?? 'item category not available.'); ?></p>
             </div>
         </div>      
             <?php endwhile; ?>
@@ -338,14 +346,17 @@ $result = $conn->query($sql);
     </div>
 
     <!-- Larger Item Display Modal -->
-    <div id="itemModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-800 bg-opacity-50">
-        <div class="relative w-full max-w-lg mx-auto mt-20 bg-white rounded-lg shadow-lg">
+    <div id="itemModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-800 bg-opacity-50 ">
+        <div class="relative w-full max-w-lg mx-auto mt-20 mb-20 bg-white rounded-lg shadow-lg">
             <button class="absolute text-gray-600 top-2 right-2 hover:text-red-900" onclick="closeModal()">✖</button>
-            <img id="modalImage" src="" alt="Modal Image" class="w-3/6 rounded-t-lg h-52">
+            <img id="modalImage" src="" alt="Modal Image" class="block w-3/6 mx-auto rounded-t-lg h-52">
             <div class="p-6">
                 <!-- Dynamically Updated Values -->
-                <h3 id="modalTitle" class="text-2xl font-bold"></h3>
-                <p id="modalPrice" class="mt-4 text-xl font-semibold text-gray-800"></p>
+                <h3 id="modalName" class="text-2xl font-bold"></h3>
+                <p id="modalOriginalPrice" class="mt-4 text-xl font-semibold text-gray-800"></p>
+                <p id="modalDiscount" class="mt-4 text-xl text-red-800"></p>
+                <p id="modalPetcategory" class="mt-2 text-gray-800"></p>
+                <p id="modalItemcategory" class="mt-2 text-gray-800"></p>
                 <p id="modalDescription" class="mt-2 text-gray-600"></p>
 
                 <div class="flex justify-around mt-6">
@@ -359,11 +370,12 @@ $result = $conn->query($sql);
             </div>
         </div>
     </div>
+
     <!-- cookie notification -->
     <div id="cookieMessage" class="fixed p-4 text-white bg-gray-800 rounded-lg shadow-lg bottom-4 left-4">
-    <p>We use cookies to enhance your experience. By continuing, you accept our cookies.</p>
-    <button onclick="acceptCookies('<?php echo $username; ?>')" class="px-4 py-2 mt-2 text-white bg-blue-500 rounded">Accept Cookies</button>
-</div>
+        <p>We use cookies to enhance your experience. By continuing, you accept our cookies.</p>
+        <button onclick="acceptCookies('<?php echo $username; ?>')" class="px-4 py-2 mt-2 text-white bg-blue-500 rounded">Accept Cookies</button>
+    </div>
 
 
 
@@ -483,24 +495,30 @@ $result = $conn->query($sql);
     startAutoSlide();
 
 
-    function openModal(title, description, price, imageSrc, itemId) {
-    document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalDescription').textContent = "Description: " + description;
-    document.getElementById('modalPrice').textContent = `Price: Rs.${price}`;
-    document.getElementById('modalImage').src = imageSrc;
-    
-    // Update links dynamically
-    document.getElementById('cartLink').href = `cart.php?item_id=${itemId}`;
-    document.getElementById('buyNowLink').href = `place_order.php?item_id=${itemId}`;
+    function openModal(name, petCategory, itemCategory, originalPrice, discount, description, imageSrc, itemId) {
+        document.getElementById('modalName').textContent = name;
+        document.getElementById('modalPetcategory').textContent = "Pet Category: " + petCategory;
+        document.getElementById('modalItemcategory').textContent = "Item Category: " + itemCategory;
+        document.getElementById('modalOriginalPrice').textContent = `Price: Rs.${originalPrice}`;
+        document.getElementById('modalDiscount').textContent = `Discount: Rs.${discount}`;
+        document.getElementById('modalDescription').textContent = "Description: " + description;
 
-    document.getElementById('itemModal').classList.remove('hidden');
+        // Set the image if available, else use a placeholder
+        document.getElementById('modalImage').src = imageSrc || 'placeholder.jpg';
+
+        // Update cart & buy now links dynamically
+        document.getElementById('cartLink').href = `cart.php?item_id=${itemId}`;
+        document.getElementById('buyNowLink').href = `place_order.php?item_id=${itemId}`;
+
+        // Show the modal
+        document.getElementById('itemModal').classList.remove('hidden');
     }
 
     function closeModal() {
         document.getElementById('itemModal').classList.add('hidden');
     }
 
-
+    //select the category to open
     function redirectToCategory(category) {
     window.location.href = "shop.php?category=" + category;
     }
